@@ -27,7 +27,7 @@ If[computeDimensions && (forceUniformExpansion || glueFirstPair ),
 phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
 
-shape = "RhombicDodecahedron";
+(* shape = "RhombicDodecahedron"; *)
 (* shape = "RhombicTriacontahedron"; *)
 
 (* shape = "Tetrahedron"; *)
@@ -35,7 +35,7 @@ shape = "RhombicDodecahedron";
 (* shape = "Dodecahedron"; *)
 
 (* shape = "Octahedron"; *)
-(* shape = "Icosahedron"; *)
+shape = "Icosahedron";
 
 
 Print["shape is: ", shape];
@@ -57,11 +57,13 @@ pieceCoordinatesFlat = Flatten[pieceCoordinates];
 
 conditions = {};
 
-If[Abs[faceCenters[[1]][[1]]] > epsilon, 
-    AppendTo[conditions, pieceCoordinates[[1]][[1]] == 1.0 * Sign[ faceCenters[[1]][[1]] ] ],
-    If[Abs[faceCenters[[1]][[2]]] > epsilon, 
-        AppendTo[conditions, pieceCoordinates[[1]][[2]] == 1.0 * Sign[ faceCenters[[1]][[2]] ] ],
-        AppendTo[conditions, pieceCoordinates[[1]][[3]] == 1.0 * Sign[ faceCenters[[1]][[3]] ] ]
+If[!computeDimensions,
+    If[Abs[faceCenters[[1]][[1]]] > epsilon, 
+        AppendTo[conditions, pieceCoordinates[[1]][[1]] == 1.0 * Sign[ faceCenters[[1]][[1]] ] ],
+        If[Abs[faceCenters[[1]][[2]]] > epsilon, 
+            AppendTo[conditions, pieceCoordinates[[1]][[2]] == 1.0 * Sign[ faceCenters[[1]][[2]] ] ],
+            AppendTo[conditions, pieceCoordinates[[1]][[3]] == 1.0 * Sign[ faceCenters[[1]][[3]] ] ]
+        ];
     ];
 ];
 
@@ -130,13 +132,15 @@ If[computeDimensions,
     rows = {};
 
     For[cid = 1, cid <= Length[conditions], cid++,
-        Print[{"Condition", cid, Length[conditions]}];
+        If[Mod[cid, 20] == 0,
+            Print[{"Condition", cid, Length[conditions]}];
+        ];
         condition = conditions[[cid]];
-        Print[condition];
+        (* Print[condition]; *)
         If[condition[[0]] == GreaterEqual,
             newCondition = condition;
             newCondition[[2]] = tightnessThreshold;
-            Print[{"modified condition", newCondition}];
+            (* Print[{"modified condition", newCondition}]; *)
             addedConditions = Append[conditions, newCondition];
             combinedConditions = Apply[ And, addedConditions];
             solutions = FindInstance[
@@ -144,27 +148,27 @@ If[computeDimensions,
                 pieceCoordinatesFlat,
                 Reals
             ];
-            Print["solution count:"]
-            Print[Length[solutions]];
+            (* Print["solution count:"] *)
+            (* Print[Length[solutions]]; *)
             If[Length[solutions] == 0,
-                Print["Tight inequality!"];
+                (* Print["Tight inequality!"]; *)
                 row = Coefficient[condition[[1]], #] & /@ pieceCoordinatesFlat;
                 AppendTo[rows, row];
             ];
         ];
 
         If[condition[[0]] == Equal,
-            Print["Equality constraint!"];
+            (* Print["Equality constraint!"]; *)
             row = Coefficient[condition[[1]], #] & /@ pieceCoordinatesFlat;
             AppendTo[rows, row];
         ];
     ];
-    Print[];
+(*     Print[];
     Print["rows"];
     Print[rows];
     Print[];
     Print["rows row count: ", Length[rows]];
-    Print["rows col count: ", Length[rows[[1]] ]];
+    Print["rows col count: ", Length[rows[[1]] ]]; *)
 
     rowsRank = MatrixRank[rows, Tolerance -> 10^-6];
     Print["rows rank: ", rowsRank];
@@ -228,10 +232,15 @@ If[computeDimensions,
 results:
 
 For rhombic triacontahedron and rhombic dodecahedron, we see interesting non-uniform expansion solutions like the physical puzzle. 
+RhombicDodecahedron: dimension = 2
+RhombicTriacontahedron: dimension = 4
+Question: are there more motions beyond the ones described by gluing pieces? Are the gluing pieces motion the vertices?
 
 For Cube, Tetrahedron, Dodecahedron, after we glue any pair, no solution is found. It suggests only uniform expansion is allowed.
+For these 3 shapes, dimension = 1
 
-For Octahedron, the 8 pieces can split in two halves along equator. It's a boring solution
+For Octahedron, the 8 pieces can split in two halves along equator. It's a boring solution. 
+Dimension = 3: splitting in the x, y, z directions.
 
 piece and motion
 {{-0.23570226000000002, -0.23570226000000002, -0.23570226000000002}, {-1., 0., 0.}}
@@ -245,7 +254,7 @@ piece and motion
 Groups
 {4, 4}
 
-For Icosahedron, more cases are allowed. I think the dimension is high.
+For Icosahedron, more cases are allowed. dimension = 9
 piece and motion
 {{-0.742344243, 0., 0.141775135}, {-1., 0.5156624860000001, 0.42479043600000005}}
 {{-0.6005691080000001, 0.43633899800000003, -0.141775135}, {-1., 0.5156624860000001, 0.42479043600000005}}
