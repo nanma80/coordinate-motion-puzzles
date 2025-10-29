@@ -232,6 +232,7 @@ If[computeDimensions,
 results:
 
 For rhombic triacontahedron and rhombic dodecahedron, we see interesting non-uniform expansion solutions like the physical puzzle. 
+
 RhombicDodecahedron: dimension = 2
 piece centers and motion
 {{-0.816496581, 0., 0.}, {-1., 0., -0.707106781}}
@@ -249,7 +250,6 @@ piece centers and motion
 Groups
 {3, 3, 3, 3}
 4
-
 
 RhombicTriacontahedron: dimension = 4
 piece centers and motion
@@ -289,8 +289,8 @@ Groups
 
 Open question: are there more motions beyond the ones described by gluing pieces? Are the gluing pieces motion the vertices?
 
-For Cube, Tetrahedron, Dodecahedron, after we glue any pair, no solution is found. It suggests only uniform expansion is allowed.
-For these 3 shapes, dimension = 1
+For Cube, Tetrahedron, Dodecahedron, after we glue any pair, no solution is found.
+For these 3 shapes, dimension = 1. The only allowed motions are uniform expansions.
 
 For Octahedron, the 8 pieces can split in two halves along equator. It's a boring solution. 
 Dimension = 3: splitting in the x, y, z directions.
