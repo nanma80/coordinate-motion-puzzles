@@ -11,7 +11,7 @@ glueFirstPair = False;
 glueFirstPair = True;
 
 computeDimensions = False;
-(* computeDimensions = True; *)
+computeDimensions = True;
 
 If[forceUniformExpansion && glueFirstPair,
     Print["Cannot both force uniform expansion and glue first pair at the same time. Will not glue first pair."];
@@ -28,7 +28,7 @@ phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
 
 (* shape = "RhombicDodecahedron"; *)
-shape = "RhombicTriacontahedron";
+(* shape = "RhombicTriacontahedron"; *)
 
 (* shape = "Tetrahedron"; *)
 (* shape = "Cube"; *)
@@ -36,6 +36,8 @@ shape = "RhombicTriacontahedron";
 
 (* shape = "Octahedron"; *)
 (* shape = "Icosahedron"; *)
+
+shape = "TetrakisHexahedron";
 
 
 Print["shape is: ", shape];
@@ -225,6 +227,8 @@ If[computeDimensions,
 
 ];
 
+Print["shape is: ", shape];
+
 
 
 
@@ -331,6 +335,46 @@ piece centers and motion
 Groups
 {5, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 2}
 13
+
+TruncatedOctahedron: dim = 4. Splitting in two halves. Not interesting
+piece centers and motions
+{{-1., -1., 0.}, {0., -1.414213562, 1.}}
+{{-1., 0., 0.707106781}, {0., -1.414213562, 1.}}
+{{0., -1., -0.707106781}, {0., -1.414213562, 1.}}
+{{0., -1., 0.707106781}, {0., -1.414213562, 1.}}
+{{0., 0., 1.414213562}, {0., -1.414213562, 1.}}
+{{1., -1., 0.}, {0., -1.414213562, 1.}}
+{{1., 0., 0.707106781}, {0., -1.414213562, 1.}}
+{{-1., 0., -0.707106781}, {0., 1.414213562, -1.}}
+{{-1., 1., 0.}, {0., 1.414213562, -1.}}
+{{0., 0., -1.414213562}, {0., 1.414213562, -1.}}
+{{0., 1., -0.707106781}, {0., 1.414213562, -1.}}
+{{0., 1., 0.707106781}, {0., 1.414213562, -1.}}
+{{1., 0., -0.707106781}, {0., 1.414213562, -1.}}
+{{1., 1., 0.}, {0., 1.414213562, -1.}}
+Groups
+{7, 7}
+2
+
+
+
+some catalan solids:
+
+DeltoidalIcositetrahedron: dimension = 29
+DeltoidalHexecontahedron (dual of small rhombicosidodecahedron): dimension = 77
+PentagonalIcositetrahedron (dual of snub cube): dim = 29
+TetrakisHexahedron: dim = 45
+
+some archimedian solids:
+
+Cuboctahedron: dim = 1
+TruncatedCube: dim = 1
+TruncatedOctahedron: dim = 4 Not really interesting because it splits into two halves
+TruncatedIcosahedron: dim = 1. not interesting. Only uniform expansion is allowed
+TruncatedTetrahedron: dim = 1
+TruncatedDodecahedron: dim = 1
+Icosidodecahedron: dim = 1
+SnubCube: dim = 39
 
 
  *)
