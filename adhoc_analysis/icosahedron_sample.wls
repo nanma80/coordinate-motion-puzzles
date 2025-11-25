@@ -295,6 +295,7 @@ Groups
 {2, 2, 1, 5, 5, 1, 2, 2}
 8
 
+This motion doesn't have much symmetry. The top and bottom pieces form caps but they don't move straight up and down.
 =====
 5-fold sym motion, 5+5 +1 +1... +1
 {1, 2}, {1, 3}, {1, 4}, {1, 5}, {6, 7}, {6, 8}, {6, 9}, {6, 10}
@@ -325,6 +326,9 @@ Groups
 {1, 1, 1, 1, 1, 5, 5, 1, 1, 1, 1, 1}
 12
 
+The middle layer pieces move outwards by the norm direction of the faces. The top and bottom pieces form two caps and move up and down.
+
+
 =======
 10 pairs:
 {1, 11}, {2, 12}, {3, 13}, {4, 14}, {5, 15}, {6, 16}, {7, 17}, {8, 18}, {9, 19}, {10, 20}
@@ -353,6 +357,8 @@ piece centers and motions
 Groups
 {2, 2, 2, 2, 2, 2, 2, 2, 2, 2}
 10
+
+The middle layer pieces move outwards by the norm direction of the faces. The top and bottom pieces follow the middle layer pieces they glue to.
 
 ====
 3-fold symmetry, 3 groups of 5s around one face
