@@ -19,7 +19,7 @@ If[forceUniformExpansion && glueFirstPair,
 ];
 
 If[computeDimensions && (forceUniformExpansion || glueFirstPair ),
-    Print["Computing dimensions. We are setting uniform expansion and glueing to false"];
+    Print["Computing dimensions. We are setting uniform expansion and gluing to false"];
     glueFirstPair = False;
     forceUniformExpansion = False;
 ];
@@ -118,7 +118,7 @@ For[pairId = 1, pairId <= Length[neighborFacePairs], pairId++,
 
 If[glueFirstPair,
     gluedPair = neighborFacePairs[[1]];
-    Print["Glueing a pair of pieces: "];
+    Print["Gluing a pair of pieces: "];
     Print[gluedPair];
     For[dim = 1, dim <= 3, dim++,
         AppendTo[conditions, pieceCoordinates[[gluedPair[[1]]]][[dim]] == pieceCoordinates[[gluedPair[[2]]]][[dim]] ];

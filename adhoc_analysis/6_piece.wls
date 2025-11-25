@@ -69,7 +69,7 @@ pieceCoordinates = Array[x, {Length[pieces], 3}];
 pieceCoordinatesFlat = Flatten[pieceCoordinates];
 
 gluedPairs = {
-    {1, 2}
+    {1, 4}, {4, 5}
 };
 
 conditions = {
@@ -112,6 +112,8 @@ Print[solutions//Length];
 For[sid = 1, sid <= Length[solutions], sid++,
     Print[sid];
     solution = solutions[[sid]];
+    Print["flattened motion"];
+    Print[ Round[pieceCoordinatesFlat/.solution, 1] ];
     values = pieceCoordinates/.solution;
     values = Round[values, 0.000001];
     Print[values];
