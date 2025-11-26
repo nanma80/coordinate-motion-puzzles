@@ -139,22 +139,34 @@ For[pairId = 1, pairId <= Length[neighborFacePairs], pairId++,
     ];
 ];
 
-gluedPairs = {
+gluedGroups = {
     (* 8 way CM *)
 (*     {1, 2}, {1, 3}, {1, 4}, {1, 5}, {6, 7}, {6, 8}, {6, 9}, {6, 10}, 
     {11, 19}, {12, 20} *)
 
-    (* 5-fold symmetry, piece 1 going up *)
+    (* 5-fold symmetry, piece 1 going up strictly, 5+5+1+1+1...+1*)
     (* {1, 2}, {1, 3}, {1, 4}, {1, 5}, {6, 7}, {6, 8}, {6, 9}, {6, 10} *)
 
-    (* 5-fold symmetry, sum of pieces 1~5 going up *)
+    (* 5-fold symmetry, sum of pieces 1~5 going up. 10 pairs *)
     (* {1, 11}, {2, 12}, {3, 13}, {4, 14}, {5, 15}, {6, 16}, {7, 17}, {8, 18}, {9, 19}, {10, 20} *)
 
     (* 3-fold symmetry *)
-    {1, 11}, {3, 4}, {12, 20}
+    (* {1, 11}, {3, 4}, {12, 20} *)
+
+    (* 3-fold symmetry, centered around face 12 *)
+    (* {1,2,3,4,5}, {19,9,11,18,8}, {20,10,13,16,6} *)
+
+    (* explore *)
+    {12, 19, 20}, {1, 2, 3}
 };
 
+gluedPairs = Join @@ (Thread[{#[[1]], Rest[#]}] & /@ gluedGroups);
+
+
 If[glueFirstPair,
+    Print["Gluing groups of pieces: "];
+    Print[gluedGroups];
+
     Print["Gluing pairs of pieces: "];
     Print[gluedPairs];
     For[pid = 1, pid <= Length[gluedPairs], pid++,
@@ -359,6 +371,8 @@ Groups
 10
 
 The middle layer pieces move outwards by the norm direction of the faces. The top and bottom pieces follow the middle layer pieces they glue to.
+
+Remark: unfortunately, the second way to pair 20 faces into 10 pairs cannot be used to disassemble
 
 ====
 3-fold symmetry, 3 groups of 5s around one face
