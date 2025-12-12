@@ -7,23 +7,21 @@
 forceUniformExpansion = False;
 (* forceUniformExpansion = True; *)
 
-glueFirstFewPairs = False;
-glueFirstFewPairs = True;
-
+PairsToGlue = 0;
 PairsToGlue = 1;
-(* PairsToGlue = 2; *)
+(* PairsToGlue = 14; *)
 
 computeDimensions = False;
-(* computeDimensions = True; *)
+computeDimensions = True;
 
-If[forceUniformExpansion && glueFirstFewPairs,
-    Print["Cannot both force uniform expansion and glue first few pairs at the same time. Will not glue any."];
-    glueFirstFewPairs = False;
+If[forceUniformExpansion && PairsToGlue > 0,
+    Print["Cannot both force uniform expansion and glue any pair of pieces at the same time. Will not glue any."];
+    PairsToGlue = 0;
 ];
 
-If[computeDimensions && (forceUniformExpansion || glueFirstFewPairs ),
+If[computeDimensions && (forceUniformExpansion || PairsToGlue > 0 ),
     Print["Computing dimensions. We are setting uniform expansion and gluing to false"];
-    glueFirstFewPairs = False;
+    PairsToGlue = 0;
     forceUniformExpansion = False;
 ];
 
@@ -41,9 +39,10 @@ epsilon = 0.000000001;
 (* shape = "RhombicTriacontahedron"; *)
 
 (* shape = "Cuboctahedron"; *)
-shape = "Icosidodecahedron";
+(* shape = "Icosidodecahedron"; *)
 
-(* shape = "DeltoidalHexecontahedron"; *)
+shape = "PentagonalHexecontahedron";
+(* shape = "SmallRhombicosidodecahedron"; *)
 
 
 Print["The shape is: ", shape];
@@ -132,15 +131,13 @@ For[edgeId = 1, edgeId <= Length[edgeToFaces], edgeId++,
     ];
 ];
 
-If[glueFirstFewPairs,
-    For[gid = 1, gid <= PairsToGlue, gid++,
-        edgeIndex = edgeToFaces[[gid]];
-        gluedPair = edgeIndex[[2]];
-        Print["Gluing a pair of pieces: "];
-        Print[gluedPair];
-        For[dim = 1, dim <= 3, dim++,
-            AppendTo[conditions, pieceCoordinates[[gluedPair[[1]]]][[dim]] == pieceCoordinates[[gluedPair[[2]]]][[dim]] ];
-        ];
+For[gid = 1, gid <= PairsToGlue, gid++,
+    edgeIndex = edgeToFaces[[gid]];
+    gluedPair = edgeIndex[[2]];
+    Print["Gluing a pair of pieces: "];
+    Print[gluedPair];
+    For[dim = 1, dim <= 3, dim++,
+        AppendTo[conditions, pieceCoordinates[[gluedPair[[1]]]][[dim]] == pieceCoordinates[[gluedPair[[2]]]][[dim]] ];
     ];
 ];
 
@@ -445,12 +442,45 @@ Groups
 Group count
 2
 
-some catalan solids:
+SmallRhombicuboctahedron (aka Rhombicuboctahedron): dim = 6
+piece centers and motions
+{{-1.207106781, 0., 0.}, {-0.41421356200000004, 0., 0.}}
+{{-0.853553391, -0.853553391, 0.}, {-0.29289321900000004, -0.29289321900000004, 0.}}
+{{-0.853553391, 0.853553391, 0.}, {-0.29289321900000004, 0.29289321900000004, 0.}}
+{{0., -1.207106781, 0.}, {0., -0.41421356200000004, 0.}}
+{{-0.853553391, 0., -0.853553391}, {0., 0., -1.}}
+{{-0.73570226, -0.73570226, -0.73570226}, {0., 0., -1.}}
+{{-0.73570226, 0.73570226, -0.73570226}, {0., 0., -1.}}
+{{0., -0.853553391, -0.853553391}, {0., 0., -1.}}
+{{0., 0., -1.207106781}, {0., 0., -1.}}
+{{0., 0.853553391, -0.853553391}, {0., 0., -1.}}
+{{0.73570226, -0.73570226, -0.73570226}, {0., 0., -1.}}
+{{0.73570226, 0.73570226, -0.73570226}, {0., 0., -1.}}
+{{0.853553391, 0., -0.853553391}, {0., 0., -1.}}
+{{-0.853553391, 0., 0.853553391}, {0., 0., 1.}}
+{{-0.73570226, -0.73570226, 0.73570226}, {0., 0., 1.}}
+{{-0.73570226, 0.73570226, 0.73570226}, {0., 0., 1.}}
+{{0., -0.853553391, 0.853553391}, {0., 0., 1.}}
+{{0., 0., 1.207106781}, {0., 0., 1.}}
+{{0., 0.853553391, 0.853553391}, {0., 0., 1.}}
+{{0.73570226, -0.73570226, 0.73570226}, {0., 0., 1.}}
+{{0.73570226, 0.73570226, 0.73570226}, {0., 0., 1.}}
+{{0.853553391, 0., 0.853553391}, {0., 0., 1.}}
+{{0., 1.207106781, 0.}, {0., 0.41421356200000004, 0.}}
+{{0.853553391, -0.853553391, 0.}, {0.29289321900000004, -0.29289321900000004, 0.}}
+{{0.853553391, 0.853553391, 0.}, {0.29289321900000004, 0.29289321900000004, 0.}}
+{{1.207106781, 0., 0.}, {0.41421356200000004, 0., 0.}}
+Groups
+{1, 1, 1, 1, 9, 9, 1, 1, 1, 1}
+Group count
+10
+
+some Catalan solids:
 DeltoidalIcositetrahedron (dual of Rhombicuboctahedron): dimension = 4, split in half
 DeltoidalHexecontahedron (dual of rhombicosidodecahedron): dimension = 10
 TetrakisHexahedron: dimension = 11
 PentagonalIcositetrahedron (dual of snub cube): dim = 1
-
+PentagonalHexecontahedron (dual of snub dodecahedron): dim = 1
 
 some archimedian solids:
 
@@ -462,6 +492,9 @@ TruncatedDodecahedron: dim = 1
 
 Cuboctahedron: dim = 4, split in half
 Icosidodecahedron: dim = 6, split in half
+
+SmallRhombicuboctahedron (aka Rhombicuboctahedron): dim = 6
+SmallRhombicosidodecahedron (aka Rhombicosidodecahedron): dim = 12
 
 SnubCube: dim = 15
 
