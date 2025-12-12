@@ -7,20 +7,23 @@
 forceUniformExpansion = False;
 (* forceUniformExpansion = True; *)
 
-glueFirstPair = False;
-glueFirstPair = True;
+glueFirstFewPairs = False;
+glueFirstFewPairs = True;
+
+PairsToGlue = 1;
+(* PairsToGlue = 2; *)
 
 computeDimensions = False;
 (* computeDimensions = True; *)
 
-If[forceUniformExpansion && glueFirstPair,
-    Print["Cannot both force uniform expansion and glue first pair at the same time. Will not glue first pair."];
-    glueFirstPair = False;
+If[forceUniformExpansion && glueFirstFewPairs,
+    Print["Cannot both force uniform expansion and glue first few pairs at the same time. Will not glue any."];
+    glueFirstFewPairs = False;
 ];
 
-If[computeDimensions && (forceUniformExpansion || glueFirstPair ),
+If[computeDimensions && (forceUniformExpansion || glueFirstFewPairs ),
     Print["Computing dimensions. We are setting uniform expansion and gluing to false"];
-    glueFirstPair = False;
+    glueFirstFewPairs = False;
     forceUniformExpansion = False;
 ];
 
@@ -40,7 +43,7 @@ epsilon = 0.000000001;
 (* shape = "Cuboctahedron"; *)
 shape = "Icosidodecahedron";
 
-(* shape = "DeltoidalIcositetrahedron"; *)
+(* shape = "DeltoidalHexecontahedron"; *)
 
 
 Print["The shape is: ", shape];
@@ -129,24 +132,16 @@ For[edgeId = 1, edgeId <= Length[edgeToFaces], edgeId++,
     ];
 ];
 
-If[glueFirstPair,
-    edgeIndex = edgeToFaces[[1]];
-    gluedPair = edgeIndex[[2]];
-    Print["Gluing a pair of pieces: "];
-    Print[gluedPair];
-    For[dim = 1, dim <= 3, dim++,
-        AppendTo[conditions, pieceCoordinates[[gluedPair[[1]]]][[dim]] == pieceCoordinates[[gluedPair[[2]]]][[dim]] ];
+If[glueFirstFewPairs,
+    For[gid = 1, gid <= PairsToGlue, gid++,
+        edgeIndex = edgeToFaces[[gid]];
+        gluedPair = edgeIndex[[2]];
+        Print["Gluing a pair of pieces: "];
+        Print[gluedPair];
+        For[dim = 1, dim <= 3, dim++,
+            AppendTo[conditions, pieceCoordinates[[gluedPair[[1]]]][[dim]] == pieceCoordinates[[gluedPair[[2]]]][[dim]] ];
+        ];
     ];
-
-    (* glue the second pair *)
-(*     edgeIndex = edgeToFaces[[2]];
-    gluedPair = edgeIndex[[2]];
-    Print["Gluing a pair of pieces: "];
-    Print[gluedPair];
-    For[dim = 1, dim <= 3, dim++,
-        AppendTo[conditions, pieceCoordinates[[gluedPair[[1]]]][[dim]] == pieceCoordinates[[gluedPair[[2]]]][[dim]] ];
-    ];
- *)
 ];
 
 Print["condition count:"];
@@ -359,7 +354,7 @@ Groups
 Group count
 10
 
-Cuboctahedron: dimension = 4
+Cuboctahedron: dimension = 4, split in half
 piece centers and motions
 {{-0.666666667, 0., -0.471404521}, {-1.414213562, 0., 1.}}
 {{-0.666666667, 0., 0.471404521}, {-1.414213562, 0., 1.}}
@@ -380,7 +375,7 @@ Groups
 Group count
 2
 
-Icosidodecahedron: dimension = 6
+Icosidodecahedron: dimension = 6, split in half
 piece centers and motions
 {{-1.484688486, 0., -0.283550269}, {-1.6180339890000002, -1.175570505, -1.}}
 {{-1.231073415, 0., 0.6155367070000001}, {-1.6180339890000002, -1.175570505, -1.}}
@@ -419,7 +414,7 @@ Groups
 Group count
 2
 
-DeltoidalIcositetrahedron (dual of Rhombicuboctahedron): dimension = 4
+DeltoidalIcositetrahedron (dual of Rhombicuboctahedron): dimension = 4, split in half
 piece centers and motions
 {{-1.250520274, -0.5295892790000001, -0.5295892790000001}, {-1., 0., 0.}}
 {{-1.250520274, -0.5295892790000001, 0.5295892790000001}, {-1., 0., 0.}}
@@ -451,7 +446,7 @@ Group count
 2
 
 some catalan solids:
-DeltoidalIcositetrahedron (dual of Rhombicuboctahedron): dimension = 4
+DeltoidalIcositetrahedron (dual of Rhombicuboctahedron): dimension = 4, split in half
 DeltoidalHexecontahedron (dual of rhombicosidodecahedron): dimension = 10
 TetrakisHexahedron: dimension = 11
 PentagonalIcositetrahedron (dual of snub cube): dim = 1
@@ -465,8 +460,8 @@ TruncatedOctahedron: dim = 1
 TruncatedIcosahedron: dim = 1
 TruncatedDodecahedron: dim = 1
 
-Cuboctahedron: dim = 4
-Icosidodecahedron: dim = 6
+Cuboctahedron: dim = 4, split in half
+Icosidodecahedron: dim = 6, split in half
 
 SnubCube: dim = 15
 
