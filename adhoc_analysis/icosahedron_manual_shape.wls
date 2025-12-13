@@ -27,7 +27,22 @@ gluedGroups = {
     (* {12, 18, 6, 8, 14}, {3, 7, 9, 13, 15}, {1, 2}, {4, 10}, {11, 17}, {19, 20} *)
 
     (* 3 groups of 5 + 5 individual. 8 way CM *)
-    {12, 18, 6, 8, 14}, {10, 16, 13, 7, 4}, {15, 19, 17, 11, 9}
+    (* {12, 18, 6, 8, 14}, {10, 16, 13, 7, 4}, {15, 19, 17, 11, 9} *)
+
+    (* 5 doubles around the equator, no solution *)
+    (* {10, 16}, {20, 19}, {17, 11}, {5, 1}, {2, 4} *)
+
+    (* 4 doubles around the equator, no solution *)
+    (* {10, 16}, {20, 19}, {17, 11}, {5, 1} *)
+
+    (* 3 doubles around the equator, solutions exist. dim = 2 *)
+    {10, 16}, {20, 19}, {17, 11}
+
+    (* invalid case with a bottom quintuple and 3 doubles in the same direction along the equator, no solution *)
+    (* {3, 7, 9, 13, 15}, {10, 16}, {20, 19}, {17, 11} *)
+
+    (* valid case with a bottom quintuple and 2 doubles in the same direction along the equator, 1 double away from the case above. Solutions exist, dim = 4 *)
+    (* {3, 7, 9, 13, 15}, {10, 16}, {20, 19} *)
 };
 
 
