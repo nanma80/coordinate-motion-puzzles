@@ -41,10 +41,7 @@ epsilon = 0.000000001;
 (* shape = "Cuboctahedron"; *)
 (* shape = "Icosidodecahedron"; *)
 
-(* shape = "SnubDodecahedron"; *)
-(* shape = "DisdyakisTriacontahedron"; *)
-shape = "GreatRhombicosidodecahedron";
-
+shape = "DisdyakisTriacontahedron"; (* 1263 constraints, takes 3 hours *)
 
 Print["The shape is: ", shape];
 
@@ -529,18 +526,16 @@ Icosidodecahedron: dim = 6, split in half
 SmallRhombicuboctahedron (aka Rhombicuboctahedron): dim = 6, see motion above
 SmallRhombicosidodecahedron (aka Rhombicosidodecahedron): dim = 12
 GreatRhombicuboctahedron (aka truncated cuboctahedron): dim = 1
+GreatRhombicosidodecahedron (aka truncated icosidodecahedron): dim = 1
 
 SnubCube: dim = 15
 SnubDodecahedron (1053 constraints, dim should be large, slow, ongoing): dim = 33
 
-computing:
-GreatRhombicosidodecahedron (aka truncated icosidodecahedron 1263 constraints, dim should be 1, very slow):
-
 Solids with dihedral symmetry:
 TriangularPrism: dim = 1
-TriangularDipyramid: dim = 2
+TriangularDipyramid: dim = 2, split up/down vs radially 3-way
 TriangularAntiprism (octahedron): dim = 3
-TriangularTrapezohedron: bad name, cube, likely dim = 1
+TriangularTrapezohedron: name not found for PolyhedronData, cube, likely dim = 1
 
 SquarePrism (cube): dim = 1
 SquareDipyramid (octahedron): dim = 3
@@ -550,17 +545,17 @@ SquareTrapezohedron: bad name, likely dim = 1
 PentagonalPrism: dim = 1
 PentagonalDipyramid: dim = 4
 PentagonalAntiprism: dim = 3
-PentagonalTrapezohedron: bad name, likely dim = 1
+PentagonalTrapezohedron: name not found for PolyhedronData, likely dim = 1
 
 HexagonalPrism: dim = 1
-HexagonalDipyramid: bad name
+HexagonalDipyramid: name not found for PolyhedronData, likely dim = 5
 HexagonalAntiprism: dim = 3
-HexagonalTrapezohedron: bad name, likely dim = 1
+HexagonalTrapezohedron: name not found for PolyhedronData, likely dim = 1
 
 HeptagonalPrism: dim = 1
-HeptagonalDipyramid: bad name
+HeptagonalDipyramid: name not found for PolyhedronData, likely dim = 6
 HeptagonalAntiprism: dim = 3
-HeptagonalTrapezohedron: bad name, likely dim = 1
+HeptagonalTrapezohedron: name not found for PolyhedronData, likely dim = 1
 
 
  *)
