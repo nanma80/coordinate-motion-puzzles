@@ -8,7 +8,7 @@ forceUniformExpansion = False;
 (* forceUniformExpansion = True; *)
 
 PairsToGlue = 0;
-PairsToGlue = 1;
+(* PairsToGlue = 1; *)
 (* PairsToGlue = 14; *)
 
 computeDimensions = False;
@@ -41,8 +41,9 @@ epsilon = 0.000000001;
 (* shape = "Cuboctahedron"; *)
 (* shape = "Icosidodecahedron"; *)
 
-shape = "PentagonalHexecontahedron";
-(* shape = "SmallRhombicosidodecahedron"; *)
+(* shape = "SnubDodecahedron"; *)
+(* shape = "DisdyakisTriacontahedron"; *)
+shape = "GreatRhombicosidodecahedron";
 
 
 Print["The shape is: ", shape];
@@ -150,7 +151,7 @@ If[computeDimensions,
 
     For[cid = 1, cid <= Length[conditions], cid++,
         If[Mod[cid, 20] == 0,
-            Print[{"Condition", cid, Length[conditions]}];
+            Print[{DateString["ISODateTime"], "Condition", cid, Length[conditions]}];
         ];
         condition = conditions[[cid]];
         (* Print[condition]; *)
@@ -475,14 +476,46 @@ Groups
 Group count
 10
 
-some Catalan solids:
-DeltoidalIcositetrahedron (dual of Rhombicuboctahedron): dimension = 4, split in half
-DeltoidalHexecontahedron (dual of rhombicosidodecahedron): dimension = 10
-TetrakisHexahedron: dimension = 11
+Platonic solids:
+Tetrahedron: dim = 1
+Cube: dim = 1
+Octahedron: dim = 3
+Dodecahedron: dim = 1
+Icosahedron: dim = 9
+
+Kepler-Poinsot (nonconvex):
+
+SmallStellatedDodecahedron: dim = 1 
+GreatDodecahedron: dim = 1
+GreatStellatedDodecahedron: dim = 1 
+GreatIcosahedron: dim = 9 (same grouping as icosahedron? maybe)
+
+All Catalan solids:
+
+RhombicDodecahedron: dim = 2, Splinter 12
+RhombicTriacontahedron: dim = 4, Splinter 30
+
+(Triakis/Tetrakis/Pentakis xxx: dual of truncated xxx)
+TriakisTetrahedron: dim = 5
+TetrakisHexahedron: dim = 11
+TriakisOctahedron: dim = 11
+TriakisIcosahedron (633 constraints): dim = 29
+PentakisDodecahedron (633 constraints): dim = 29
+
+DeltoidalIcositetrahedron (dual of Rhombicuboctahedron): dim = 4, split in half
+DeltoidalHexecontahedron (dual of rhombicosidodecahedron): dim = 10
 PentagonalIcositetrahedron (dual of snub cube): dim = 1
 PentagonalHexecontahedron (dual of snub dodecahedron): dim = 1
 
-some archimedian solids:
+DisdyakisDodecahedron (dual of truncated cuboctahedron aka great rhombicuboctahedron, 507): dim = 23
+
+computing:
+
+DisdyakisTriacontahedron (dual of truncated icosidodecahedron aka great rhombicosidodecahedron, 1263, very slow, should be high dim):
+
+
+All Archimedean solids:
+command: Map[Print, PolyhedronData["Archimedean"]]
 
 TruncatedTetrahedron: dim = 1
 TruncatedCube: dim = 1
@@ -493,9 +526,41 @@ TruncatedDodecahedron: dim = 1
 Cuboctahedron: dim = 4, split in half
 Icosidodecahedron: dim = 6, split in half
 
-SmallRhombicuboctahedron (aka Rhombicuboctahedron): dim = 6
+SmallRhombicuboctahedron (aka Rhombicuboctahedron): dim = 6, see motion above
 SmallRhombicosidodecahedron (aka Rhombicosidodecahedron): dim = 12
+GreatRhombicuboctahedron (aka truncated cuboctahedron): dim = 1
 
 SnubCube: dim = 15
+SnubDodecahedron (1053 constraints, dim should be large, slow, ongoing): dim = 33
+
+computing:
+GreatRhombicosidodecahedron (aka truncated icosidodecahedron 1263 constraints, dim should be 1, very slow):
+
+Solids with dihedral symmetry:
+TriangularPrism: dim = 1
+TriangularDipyramid: dim = 2
+TriangularAntiprism (octahedron): dim = 3
+TriangularTrapezohedron: bad name, cube, likely dim = 1
+
+SquarePrism (cube): dim = 1
+SquareDipyramid (octahedron): dim = 3
+SquareAntiprism: dim = 3
+SquareTrapezohedron: bad name, likely dim = 1
+
+PentagonalPrism: dim = 1
+PentagonalDipyramid: dim = 4
+PentagonalAntiprism: dim = 3
+PentagonalTrapezohedron: bad name, likely dim = 1
+
+HexagonalPrism: dim = 1
+HexagonalDipyramid: bad name
+HexagonalAntiprism: dim = 3
+HexagonalTrapezohedron: bad name, likely dim = 1
+
+HeptagonalPrism: dim = 1
+HeptagonalDipyramid: bad name
+HeptagonalAntiprism: dim = 3
+HeptagonalTrapezohedron: bad name, likely dim = 1
+
 
  *)

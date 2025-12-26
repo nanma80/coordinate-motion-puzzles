@@ -30,18 +30,7 @@ If[computeDimensions && (forceUniformExpansion || glueFirstPair ),
 phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
 
-(* shape = "RhombicDodecahedron"; *)
-(* shape = "RhombicTriacontahedron"; *)
-
-(* shape = "Tetrahedron"; *)
-(* shape = "Cube"; *)
-(* shape = "Dodecahedron"; *)
-
-(* shape = "Octahedron"; *)
 shape = "Icosahedron";
-
-(* shape = "TetrakisHexahedron"; *)
-
 
 Print["shape is: ", shape];
 
@@ -65,8 +54,6 @@ pieceCoordinatesFlat = Flatten[pieceCoordinates];
 
 conditions = {};
 
-AppendTo[conditions, pieceCoordinates[[1]][[3]] == 1.0 ];
-
 (* 5-fold symmetric motion: piece 1 going up (5-fold axis) *)
 (* AppendTo[conditions, pieceCoordinates[[1]][[1]] == 0.0 ];
 AppendTo[conditions, pieceCoordinates[[1]][[2]] == 0.0 ];
@@ -81,16 +68,10 @@ AppendTo[conditions,
 AppendTo[conditions, pieceCoordinates[[1]][[3]] == 1.0 ]; *)
 
 
-(* If[!computeDimensions,
-    If[Abs[faceCenters[[1]][[1]]] > epsilon, 
-        AppendTo[conditions, pieceCoordinates[[1]][[1]] == 1.0 * Sign[ faceCenters[[1]][[1]] ] ],
-        If[Abs[faceCenters[[1]][[2]]] > epsilon, 
-            AppendTo[conditions, pieceCoordinates[[1]][[2]] == 1.0 * Sign[ faceCenters[[1]][[2]] ] ],
-            AppendTo[conditions, pieceCoordinates[[1]][[3]] == 1.0 * Sign[ faceCenters[[1]][[3]] ] ]
-        ];
-    ];
+If[!computeDimensions,
+    AppendTo[conditions, pieceCoordinates[[1]][[3]] == 1.0 ];
 ];
- *)
+
 
 If[forceUniformExpansion,
     conditions = {};
@@ -321,9 +302,7 @@ If we use first neighbors + second neighbors to construct cross product constrai
 first neighbors: 30 pairs, corresponding to 30 edges of the icosahedron
 second neighbors: 60 pairs
 
-dimension = 0? precision issue? Why? I don't know.
-
-It should be at least 1, because we have at least one solution, uniform expansion
+dimension = 1. Uniform expansion
 
 piece centers and motions
 {12, {-0.742344243, 0., 0.141775135}, {-1.236067977, 0., 0.236067977}}
