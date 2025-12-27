@@ -9,10 +9,10 @@ forceUniformExpansion = False;
 
 PairsToGlue = 0;
 (* PairsToGlue = 1; *)
-(* PairsToGlue = 14; *)
+PairsToGlue = 3;
 
 computeDimensions = False;
-computeDimensions = True;
+(* computeDimensions = True; *)
 
 If[forceUniformExpansion && PairsToGlue > 0,
     Print["Cannot both force uniform expansion and glue any pair of pieces at the same time. Will not glue any."];
@@ -41,7 +41,7 @@ epsilon = 0.000000001;
 (* shape = "Cuboctahedron"; *)
 (* shape = "Icosidodecahedron"; *)
 
-shape = "DisdyakisTriacontahedron"; (* 1263 constraints, takes 3 hours *)
+shape = "HexagonalAntiprism";
 
 Print["The shape is: ", shape];
 
@@ -132,6 +132,11 @@ For[edgeId = 1, edgeId <= Length[edgeToFaces], edgeId++,
 For[gid = 1, gid <= PairsToGlue, gid++,
     edgeIndex = edgeToFaces[[gid]];
     gluedPair = edgeIndex[[2]];
+    If[ StringContainsQ[shape, "Antiprism"] && (gluedPair[[1]] < 3 || gluedPair[[2]] < 3), 
+        Print["Skipping a pair of pieces for antiprism: "];
+        Print[gluedPair];
+        Continue[];
+    ];
     Print["Gluing a pair of pieces: "];
     Print[gluedPair];
     For[dim = 1, dim <= 3, dim++,
@@ -219,7 +224,7 @@ If[computeDimensions,
         Print["piece centers and motions"];
         pieceAndMotion = {};
         For[pid = 1, pid <= faceCount, pid++,
-            AppendTo[pieceAndMotion, { Round[ faceCenters[[pid]], epsilon ], values[[pid]]}];
+            AppendTo[pieceAndMotion, {pid, Round[ faceCenters[[pid]], epsilon ], values[[pid]]}];
         ];
         pieceAndMotion = SortBy[pieceAndMotion, Last];
         Map[Print, pieceAndMotion];
@@ -473,6 +478,63 @@ Groups
 Group count
 10
 
+SquareAntiprism: (this motion may not represent an extreme case)
+piece centers and motions
+{8, {-0.569035594, 0., -0.140149403}, {-0.6368607310000001, 0., -0.656854249}}
+{5, {-0.40236892700000004, -0.40236892700000004, 0.140149403}, {-0.34831070000000003, -0.6966213990000001, -0.171572875}}
+{9, {0., -0.569035594, -0.140149403}, {-0.34831070000000003, -0.6966213990000001, -0.171572875}}
+{1, {0., 0., -0.42044820800000005}, {-0.34831070000000003, 0., -1.}}
+{4, {-0.40236892700000004, 0.40236892700000004, 0.140149403}, {-0.34831070000000003, 0.6966213990000001, -0.171572875}}
+{7, {0., 0.569035594, -0.140149403}, {-0.34831070000000003, 0.6966213990000001, -0.171572875}}
+{2, {0., 0., 0.42044820800000005}, {0.34831070000000003, 0., 1.}}
+{6, {0.40236892700000004, -0.40236892700000004, 0.140149403}, {0.6368607310000001, -0.288550032, 0.5147186260000001}}
+{3, {0.40236892700000004, 0.40236892700000004, 0.140149403}, {0.6368607310000001, 0.288550032, 0.5147186260000001}}
+{10, {0.569035594, 0., -0.140149403}, {0.7563820680000001, 0., 0.31370849900000003}}
+Groups
+{1, 2, 1, 2, 1, 1, 1, 1}
+Group count
+8
+
+PentagonalAntiprism: (this motion may not represent an extreme case)
+piece centers and motions
+{5, {-0.742344243, 0., 0.141775135}, {-0.5450849720000001, -0.22451398800000003, 0.236067977}}
+{10, {-0.6005691080000001, -0.43633899800000003, -0.141775135}, {-0.5450849720000001, -0.22451398800000003, 0.236067977}}
+{4, {-0.22939698700000002, 0.70601133, 0.141775135}, {-0.30901699400000004, 0.5020285400000001, -0.236067977}}
+{9, {-0.6005691080000001, 0.43633899800000003, -0.141775135}, {-0.30901699400000004, 0.5020285400000001, -0.236067977}}
+{6, {-0.22939698700000002, -0.70601133, 0.141775135}, {-0.163118961, -0.5020285400000001, 0.5278640450000001}}
+{2, {0., 0., 0.425325404}, {-0.072949017, -0.22451398800000003, 1.}}
+{1, {0., 0., -0.425325404}, {0.072949017, 0.22451398800000003, -1.}}
+{8, {0.22939698700000002, 0.70601133, -0.141775135}, {0.163118961, 0.5020285400000001, -0.5278640450000001}}
+{7, {0.6005691080000001, -0.43633899800000003, 0.141775135}, {0.30901699400000004, -0.5020285400000001, 0.236067977}}
+{11, {0.22939698700000002, -0.70601133, -0.141775135}, {0.30901699400000004, -0.5020285400000001, 0.236067977}}
+{3, {0.6005691080000001, 0.43633899800000003, 0.141775135}, {0.5450849720000001, 0.22451398800000003, -0.236067977}}
+{12, {0.742344243, 0., -0.141775135}, {0.5450849720000001, 0.22451398800000003, -0.236067977}}
+Groups
+{2, 2, 1, 1, 1, 1, 2, 2}
+Group count
+8
+
+HexagonalAntiprism: (this motion may not represent an extreme case)
+piece centers and motions
+{6, {-0.7886751350000001, -0.45534180100000005, 0.142599946}, {-0.463266057, -0.11462862100000001, 0.07179677000000001}}
+{11, {-0.9106836030000001, 0., -0.142599946}, {-0.463266057, -0.11462862100000001, 0.07179677000000001}}
+{5, {-0.7886751350000001, 0.45534180100000005, 0.142599946}, {-0.35686740100000003, 0.28245657100000005, 0.32050807600000003}}
+{10, {-0.45534180100000005, 0.7886751350000001, -0.142599946}, {-0.234008815, 0.40531515700000004, 0.215390309}}
+{12, {-0.45534180100000005, -0.7886751350000001, -0.142599946}, {-0.127610158, -0.45028452, -0.215390309}}
+{7, {0., -0.9106836030000001, 0.142599946}, {-0.066180865, -0.46674445000000003, -0.176914536}}
+{2, {0., 0., 0.427799839}, {-0.066180865, 0.11462862100000001, 1.}}
+{4, {0., 0.9106836030000001, 0.142599946}, {-0.066180865, 0.45028452, 0.32050807600000003}}
+{1, {0., 0., -0.427799839}, {0.066180865, -0.11462862100000001, -1.}}
+{13, {0.45534180100000005, -0.7886751350000001, -0.142599946}, {0.22450567000000002, -0.388855227, -0.358983849}}
+{3, {0.7886751350000001, 0.45534180100000005, 0.142599946}, {0.330904327, 0.34388586400000004, 0.07179677000000001}}
+{9, {0.45534180100000005, 0.7886751350000001, -0.142599946}, {0.330904327, 0.34388586400000004, 0.07179677000000001}}
+{8, {0.7886751350000001, -0.45534180100000005, 0.142599946}, {0.43730298300000003, -0.176057914, -0.176914536}}
+{14, {0.9106836030000001, 0., -0.142599946}, {0.45376291300000005, -0.11462862100000001, -0.215390309}}
+Groups
+{2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1}
+Group count
+12
+
 Platonic solids:
 Tetrahedron: dim = 1
 Cube: dim = 1
@@ -505,11 +567,7 @@ PentagonalIcositetrahedron (dual of snub cube): dim = 1
 PentagonalHexecontahedron (dual of snub dodecahedron): dim = 1
 
 DisdyakisDodecahedron (dual of truncated cuboctahedron aka great rhombicuboctahedron, 507): dim = 23
-
-computing:
-
-DisdyakisTriacontahedron (dual of truncated icosidodecahedron aka great rhombicosidodecahedron, 1263, very slow, should be high dim):
-
+DisdyakisTriacontahedron (dual of truncated icosidodecahedron aka great rhombicosidodecahedron, 1263): dim = 59
 
 All Archimedean solids:
 command: Map[Print, PolyhedronData["Archimedean"]]
@@ -532,6 +590,9 @@ SnubCube: dim = 15
 SnubDodecahedron (1053 constraints, dim should be large, slow, ongoing): dim = 33
 
 Solids with dihedral symmetry:
+Useful command:
+Table[ PolyhedronData[{"Antiprism", k}, "AlternateStandardNames"], {k, 3, 10}]
+
 TriangularPrism: dim = 1
 TriangularDipyramid: dim = 2, split up/down vs radially 3-way
 TriangularAntiprism (octahedron): dim = 3
@@ -557,5 +618,14 @@ HeptagonalDipyramid: name not found for PolyhedronData, likely dim = 6
 HeptagonalAntiprism: dim = 3
 HeptagonalTrapezohedron: name not found for PolyhedronData, likely dim = 1
 
+OctagonalAntiprism: dim = 3
+
+NonagonalAntiprism: dim = 3
+
+DecagonalAntiprism: dim = 3
+
+Q: why are the dimensions of all antiprisms 3? There must be a common reason
+
+SnubSquareAntiprism: dim = 11
 
  *)
