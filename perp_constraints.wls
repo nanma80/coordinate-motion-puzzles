@@ -76,8 +76,6 @@ faceCount = Length[faces];
 pieceCount = faceCount; (* for convenience *)
 Print["piece (face) count: ", pieceCount];
 
-minFaceCenterDistance = 1000.0;
-
 (* each face becomes a piece *)
 pieceCoordinates = Array[x, {faceCount, 3}];
 pieceCoordinatesFlat = Flatten[pieceCoordinates];
