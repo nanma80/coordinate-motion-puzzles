@@ -9,7 +9,10 @@ forceUniformExpansion = False;
 
 PairsToGlue = 0;
 (* PairsToGlue = 1; *)
-PairsToGlue = 3;
+(* PairsToGlue = 3; *)
+
+findVertices = False;
+(* findVertices = True; *)
 
 computeDimensions = False;
 (* computeDimensions = True; *)
@@ -19,21 +22,29 @@ If[forceUniformExpansion && PairsToGlue > 0,
     PairsToGlue = 0;
 ];
 
-If[computeDimensions && (forceUniformExpansion || PairsToGlue > 0 ),
-    Print["Computing dimensions. We are setting uniform expansion and gluing to false"];
+If[findVertices && (forceUniformExpansion || PairsToGlue > 0 ),
+    Print["Finding vertices of the feasible set. We are setting uniform expansion and gluing to false"];
     PairsToGlue = 0;
     forceUniformExpansion = False;
 ];
 
+If[computeDimensions && (forceUniformExpansion || PairsToGlue > 0 ),
+    Print["Computing dimensions. We are setting uniform expansion and gluing to false"];
+    PairsToGlue = 0;
+    forceUniformExpansion = False;
+    findVertices = False;
+];
+
 phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
+findVerticesBatchSize = 1000;
 
 (* shape = "Tetrahedron"; *)
 (* shape = "Cube"; *)
 (* shape = "Dodecahedron"; *)
 
 (* shape = "Octahedron"; *)
-(* shape = "Icosahedron"; *)
+shape = "Icosahedron";
 
 (* shape = "RhombicDodecahedron"; *)
 (* shape = "RhombicTriacontahedron"; *)
@@ -41,7 +52,7 @@ epsilon = 0.000000001;
 (* shape = "Cuboctahedron"; *)
 (* shape = "Icosidodecahedron"; *)
 
-shape = "HexagonalAntiprism";
+(* shape = "HexagonalAntiprism"; *)
 
 Print["The shape is: ", shape];
 
@@ -71,6 +82,7 @@ edgeToFaces = Table[
 
 faceCenters = Mean /@ (vertices[[#]] & /@ faces);
 faceCenters = N[faceCenters];
+faceCentersFlat = Flatten[faceCenters];
 
 faceCount = Length[faces];
 pieceCount = faceCount; (* for convenience *)
@@ -83,13 +95,7 @@ pieceCoordinatesFlat = Flatten[pieceCoordinates];
 conditions = {};
 
 If[!computeDimensions,
-    If[Abs[faceCenters[[1]][[1]]] > epsilon, 
-        AppendTo[conditions, pieceCoordinates[[1]][[1]] == 1.0 * Sign[ faceCenters[[1]][[1]] ] ],
-        If[Abs[faceCenters[[1]][[2]]] > epsilon, 
-            AppendTo[conditions, pieceCoordinates[[1]][[2]] == 1.0 * Sign[ faceCenters[[1]][[2]] ] ],
-            AppendTo[conditions, pieceCoordinates[[1]][[3]] == 1.0 * Sign[ faceCenters[[1]][[3]] ] ]
-        ];
-    ];
+    AppendTo[conditions, pieceCoordinatesFlat.faceCentersFlat == 10.0];
 ];
 
 If[forceUniformExpansion,
@@ -151,7 +157,7 @@ If[computeDimensions,
 
     For[cid = 1, cid <= Length[conditions], cid++,
         If[Mod[cid, 20] == 0,
-            Print[{DateString["ISODateTime"], "Condition", cid, Length[conditions]}];
+            Print[{DateString["ISODateTime"], "Checking constraints", cid, Length[conditions]}];
         ];
         condition = conditions[[cid]];
         (* Print[condition]; *)
@@ -198,43 +204,93 @@ If[computeDimensions,
     numericalConeDimension = Length[rows[[1]] ] - numericalRank;
     Print["numerical Dimension: ", numericalConeDimension],
 
-    (* find instance *)
-    combinedConditions = Apply[ And, conditions];
+    If[findVertices,
+        (* find vertices *)
+        Print["Starting to find vertices of the feasible set"];
+        discoveredVertices = {};
 
-    Print["Starting FindInstance"];
-    solutions = FindInstance[
-        combinedConditions,
-        pieceCoordinatesFlat,
-        Reals
-    ];
+        For[directionId = 1, directionId <= findVerticesBatchSize, directionId++,
+            randomDirection = RandomVariate[NormalDistribution[], Length[pieceCoordinatesFlat]];
+            combinedConditions = Apply[ And, conditions];
 
-    (* Print[solutions]; *)
-    Print["Found these many solutions:"]
-    Print[solutions//Length];
+            maxSolution = NMaximize[
+                {randomDirection.pieceCoordinatesFlat, combinedConditions},
+                pieceCoordinatesFlat
+            ];
+            If[maxSolution[[1]] == -Infinity,
+                Print["Find vertices: feasible set is empty. Cannot find vertices. Exiting"];
+                Exit[];
+            ];
+            preciseValues = pieceCoordinates/.maxSolution[[2]];
+            values = Round[preciseValues, epsilon];
+            pieceAndMotion = {};
+            For[pid = 1, pid <= faceCount, pid++,
+                AppendTo[pieceAndMotion, {pid, Round[ faceCenters[[pid]], epsilon ], values[[pid]]}];
+            ];
+            pieceAndMotion = SortBy[pieceAndMotion, Last];
+            motionTally = Tally[Map[Last, pieceAndMotion]];
+            tallyCounts = ReverseSort[ Map[#[[2]]&, motionTally] ];
+            (* Print[ tallyCounts ]; *)
+            (* Print[ values ]; *)
 
-    For[sid = 1, sid <= Length[solutions], sid++,
-        Print["solution #", sid];
-        solution = solutions[[sid]];
-        values = pieceCoordinates/.solution;
-        values = Round[values, epsilon];
-        (* Print[values]; *)
-        (* values = Round[values, 1]; *)
-        Print["piece centers and motions"];
-        pieceAndMotion = {};
-        For[pid = 1, pid <= faceCount, pid++,
-            AppendTo[pieceAndMotion, {pid, Round[ faceCenters[[pid]], epsilon ], values[[pid]]}];
+            AppendTo[discoveredVertices, { preciseValues, tallyCounts } ];
         ];
-        pieceAndMotion = SortBy[pieceAndMotion, Last];
-        Map[Print, pieceAndMotion];
-        (* Print[pieceAndMotion]; *)
+        Print["before dedup"];
+        Print[Length[discoveredVertices]];
 
-        motionTally = Tally[Map[Last, pieceAndMotion]];
-        tallyCounts = Map[#[[2]]&, motionTally];
-        Print["Groups"];
-        Print[ tallyCounts ];
-        Print["Group count"]
-        Print[ tallyCounts//Length ];
+        (* dedup *)
+        discoveredVertices = Union[discoveredVertices, SameTest -> (EuclideanDistance[Flatten[#1[[1]]], Flatten[#2[[1]]] ] < epsilon * 10&) ];
+        Print["after dedup"];
+        Print[Length[discoveredVertices]];
+        For[vid = 1, vid <= Length[discoveredVertices], vid++,
+            If[ discoveredVertices[[vid]][[2]][[1]] < 5,
+                Print[ discoveredVertices[[vid]][[2]] ];
+            ];
+        ];
+
+        (* need to remove false vertex due to float number precision *)
+        ,
+
+        (* find instance *)
+        combinedConditions = Apply[ And, conditions];
+
+        Print["Starting FindInstance"];
+        solutions = FindInstance[
+            combinedConditions,
+            pieceCoordinatesFlat,
+            Reals
+        ];
+
+        (* Print[solutions]; *)
+        Print["Found these many solutions:"]
+        Print[solutions//Length];
+
+        For[sid = 1, sid <= Length[solutions], sid++,
+            Print["solution #", sid];
+            solution = solutions[[sid]];
+            values = pieceCoordinates/.solution;
+            values = Round[values, epsilon];
+            (* Print[values]; *)
+            (* values = Round[values, 1]; *)
+            Print["piece centers and motions"];
+            pieceAndMotion = {};
+            For[pid = 1, pid <= faceCount, pid++,
+                AppendTo[pieceAndMotion, {pid, Round[ faceCenters[[pid]], epsilon ], values[[pid]]}];
+            ];
+            pieceAndMotion = SortBy[pieceAndMotion, Last];
+            Map[Print, pieceAndMotion];
+            (* Print[pieceAndMotion]; *)
+
+            motionTally = Tally[Map[Last, pieceAndMotion]];
+            tallyCounts = Map[#[[2]]&, motionTally];
+            Print["Groups"];
+            Print[ tallyCounts ];
+            Print["Group count"]
+            Print[ tallyCounts//Length ];
+        ];
+
     ];
+
 
 ];
 
