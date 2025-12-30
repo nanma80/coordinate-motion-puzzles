@@ -37,22 +37,22 @@ If[computeDimensions && (forceUniformExpansion || PairsToGlue > 0 ),
 
 phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
-findVerticesBatchSize = 1000;
+findVerticesBatchSize = 10000;
 
 (* shape = "Tetrahedron"; *)
 (* shape = "Cube"; *)
 (* shape = "Dodecahedron"; *)
 
 (* shape = "Octahedron"; *)
-(* shape = "Icosahedron"; *)
+shape = "Icosahedron";
 
-shape = "RhombicDodecahedron";
+(* shape = "RhombicDodecahedron"; *)
 (* shape = "RhombicTriacontahedron"; *)
 
 (* shape = "Cuboctahedron"; *)
 (* shape = "Icosidodecahedron"; *)
 
-(* shape = "HexagonalAntiprism"; *)
+(* shape = "SquareAntiprism"; *)
 
 Print["The shape is: ", shape];
 isExtreme[v_, verts_] := Module[
@@ -68,6 +68,7 @@ isExtreme[v_, verts_] := Module[
     },
     vars
   ];
+  (* Print[res]; *)
   minval = res[[1]];
   minval > 10 epsilon
 ];
@@ -238,7 +239,7 @@ If[computeDimensions,
                 Exit[];
             ];
             preciseValues = pieceCoordinates/.maxSolution[[2]];
-            values = Round[preciseValues, epsilon];
+            values = Round[preciseValues, 500 epsilon];
             pieceAndMotion = {};
             For[pid = 1, pid <= faceCount, pid++,
                 AppendTo[pieceAndMotion, {pid, Round[ faceCenters[[pid]], epsilon ], values[[pid]]}];
@@ -246,8 +247,6 @@ If[computeDimensions,
             pieceAndMotion = SortBy[pieceAndMotion, Last];
             motionTally = Tally[Map[Last, pieceAndMotion]];
             tallyCounts = ReverseSort[ Map[#[[2]]&, motionTally] ];
-            (* Print[ tallyCounts ]; *)
-            (* Print[ values ]; *)
 
             AppendTo[discoveredVertices, { preciseValues, tallyCounts } ];
         ];
@@ -255,13 +254,11 @@ If[computeDimensions,
         Print[Length[discoveredVertices]];
 
         (* dedup *)
-        discoveredVertices = Union[discoveredVertices, SameTest -> (EuclideanDistance[Flatten[#1[[1]]], Flatten[#2[[1]]] ] < epsilon * 10&) ];
+        discoveredVertices = Union[discoveredVertices, SameTest -> (EuclideanDistance[Flatten[#1[[1]]], Flatten[#2[[1]]] ] < epsilon * 1000&) ];
         Print["after dedup"];
         Print[Length[discoveredVertices]];
         For[vid = 1, vid <= Length[discoveredVertices], vid++,
-            If[ discoveredVertices[[vid]][[2]][[1]] < 5,
-                Print[ discoveredVertices[[vid]][[2]] ];
-            ];
+            Print["groups: ", discoveredVertices[[vid]][[2]] ];
         ];
 
         allDiscoveredVerticesValues = Map[Flatten[First[#]]&, discoveredVertices];
@@ -271,15 +268,20 @@ If[computeDimensions,
                 Print[{DateString["ISODateTime"], "Checking vertex", vid, Length[discoveredVertices]}];
             ];
             vert = discoveredVertices[[vid]];
-            If[isExtreme[Flatten[vert[[1]]], allDiscoveredVerticesValues ],
+            
+            vertexIsTrue = isExtreme[Flatten[vert[[1]]], allDiscoveredVerticesValues ];
+            If[vertexIsTrue,
+                Print["True vertex:"];
+                Print[vert[[2]]];
+                Print[vert[[1]]];
                 AppendTo[trueVerts, vert];
             ];
         ];
-        Print["after true verts check"];
+        Print["after true vertex check"];
         For[vid = 1, vid <= Length[trueVerts], vid++,
             Print[ trueVerts[[vid]][[2]] ];
         ];
-        Print["true verts count"];
+        Print["true vertex count"];
         Print[Length[trueVerts]];
         ,
 
@@ -355,7 +357,7 @@ Groups
 Group count
 4
 
-RhombicTriacontahedron: dimension = 4
+RhombicTriacontahedron: dimension = 4. The region has 12 vertices. All symmetricaly. One of them is as follows.
 piece centers and motions
 {{-1.309016994, -0.425325404, 0.}, {-0.7847047290000001, -0.49259709100000004, 0.139676038}}
 {{-1.309016994, 0.425325404, 0.}, {-0.7847047290000001, 0.695558255, 0.139676038}}
@@ -391,8 +393,6 @@ Groups
 {1, 3, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 3, 1, 1, 3}
 Group count
 20
-
-Open question: are there more motions beyond the ones described by gluing pieces? Are the gluing pieces motion the vertices?
 
 For Cube, Tetrahedron, Dodecahedron, after we glue any pair, no solution is found.
 For these 3 shapes, dimension = 1. The only allowed motions are uniform expansions.
