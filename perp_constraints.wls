@@ -44,7 +44,7 @@ findVerticesBatchSize = 1000;
 (* shape = "Dodecahedron"; *)
 
 (* shape = "Octahedron"; *)
-(* shape = "Icosahedron"; *)
+shape = "Icosahedron";
 
 (* shape = "RhombicDodecahedron"; *)
 (* shape = "RhombicTriacontahedron"; *)
@@ -52,7 +52,7 @@ findVerticesBatchSize = 1000;
 (* shape = "Cuboctahedron"; *)
 (* shape = "Icosidodecahedron"; *)
 
-shape = "PentagonalAntiprism";
+(* shape = "NonagonalAntiprism"; *)
 
 outputFolder = "output";
 dataFolder = "data";
@@ -240,8 +240,8 @@ If[computeDimensions,
                 pieceCoordinatesFlat
             ];
             If[maxSolution[[1]] == -Infinity,
-                Print["Find vertices: feasible set is empty. Cannot find vertices. Exiting"];
-                Exit[];
+                (* Print["Find vertices: feasible set is empty. Cannot find vertices. Skipping"]; *)
+                Continue[];
             ];
             preciseValues = pieceCoordinates/.maxSolution[[2]];
             values = Round[preciseValues, 1000 epsilon];
