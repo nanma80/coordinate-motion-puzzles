@@ -44,9 +44,9 @@ findVerticesBatchSize = 1000;
 (* shape = "Dodecahedron"; *)
 
 (* shape = "Octahedron"; *)
-shape = "Icosahedron";
+(* shape = "Icosahedron"; *)
 
-(* shape = "RhombicDodecahedron"; *)
+shape = "RhombicDodecahedron";
 (* shape = "RhombicTriacontahedron"; *)
 
 (* shape = "Cuboctahedron"; *)
@@ -63,8 +63,8 @@ isExtreme[v_, verts_] := Module[
   vars = Table[Unique["w"], {n}];
   res = Quiet @ NMinimize[
     {
-      Total[(vars.others - v)^2],
-      Total[vars] == 1 && And @@ Thread[vars >= 0]
+      Norm[vars.others - v]^2,
+      Total[vars] == 1.0 && And @@ Thread[vars >= 0]
     },
     vars
   ];
