@@ -37,7 +37,7 @@ If[computeDimensions && (forceUniformExpansion || PairsToGlue > 0 ),
 
 phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
-findVerticesBatchSize = 10;
+findVerticesBatchSize = 1000;
 
 (* shape = "Tetrahedron"; *)
 (* shape = "Cube"; *)
@@ -55,20 +55,21 @@ shape = "Icosahedron";
 (* shape = "HexagonalAntiprism"; *)
 
 Print["The shape is: ", shape];
-isExtreme[v_, verts_] := Module[{lambdaVector},
-  lambdaVector = Array[lambdaVector, Length[verts]];
-  ! Quiet @ Check[
-    FindInstance[
-      And @@ {
-        Total[lambdaVector] == 1,
-        lambdaVector >= 0,
-        Norm[lambdaVector.verts - v] < epsilon,
-        Count[lambdaVector, _?(# > epsilon * 10 &)] > 1
-      },
-      lambdaVector
-    ],
-    False
-  ]
+isExtreme[v_, verts_] := Module[
+  {others, n, vars, res, minval},
+  others = Select[verts, EuclideanDistance[v, #] > 10 epsilon&];
+  n = Length[others];
+  If[n == 0, Return[True]];
+  vars = Table[Unique["w"], {n}];
+  res = Quiet @ NMinimize[
+    {
+      Total[(vars.others - v)^2],
+      Total[vars] == 1 && And @@ Thread[vars >= 0]
+    },
+    vars
+  ];
+  minval = res[[1]];
+  minval > 10 epsilon
 ];
 
 vertices = PolyhedronData[shape, "VertexCoordinates"];
@@ -262,11 +263,23 @@ If[computeDimensions,
                 Print[ discoveredVertices[[vid]][[2]] ];
             ];
         ];
-        Print[Length[discoveredVertices]];
 
-        (* need to remove false vertex due to float number precision *)
         allDiscoveredVerticesValues = Map[Flatten[First[#]]&, discoveredVertices];
-        trueVerts = Select[discoveredVertices, isExtreme[Flatten[#[[1]]], allDiscoveredVerticesValues ]&];
+        trueVerts = {};
+        For[vid = 1, vid <= Length[discoveredVertices], vid++,
+            If[Mod[vid, 20] == 0,
+                Print[{DateString["ISODateTime"], "Checking vertex", vid, Length[discoveredVertices]}];
+            ];
+            vert = discoveredVertices[[vid]];
+            If[isExtreme[Flatten[vert[[1]]], allDiscoveredVerticesValues ],
+                AppendTo[trueVerts, vert];
+            ];
+        ];
+        Print["after true verts check"];
+        For[vid = 1, vid <= Length[trueVerts], vid++,
+            Print[ trueVerts[[vid]][[2]] ];
+        ];
+        Print["true verts count"];
         Print[Length[trueVerts]];
         ,
 
