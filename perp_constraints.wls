@@ -37,7 +37,7 @@ If[computeDimensions && (forceUniformExpansion || PairsToGlue > 0 ),
 
 phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
-findVerticesBatchSize = 1000;
+findVerticesBatchSize = 10;
 
 (* shape = "Tetrahedron"; *)
 (* shape = "Cube"; *)
@@ -55,6 +55,21 @@ shape = "Icosahedron";
 (* shape = "HexagonalAntiprism"; *)
 
 Print["The shape is: ", shape];
+isExtreme[v_, verts_] := Module[{lambdaVector},
+  lambdaVector = Array[lambdaVector, Length[verts]];
+  ! Quiet @ Check[
+    FindInstance[
+      And @@ {
+        Total[lambdaVector] == 1,
+        lambdaVector >= 0,
+        Norm[lambdaVector.verts - v] < epsilon,
+        Count[lambdaVector, _?(# > epsilon * 10 &)] > 1
+      },
+      lambdaVector
+    ],
+    False
+  ]
+];
 
 vertices = PolyhedronData[shape, "VertexCoordinates"];
 faces = PolyhedronData[shape, "FaceIndices"];
@@ -247,8 +262,12 @@ If[computeDimensions,
                 Print[ discoveredVertices[[vid]][[2]] ];
             ];
         ];
+        Print[Length[discoveredVertices]];
 
         (* need to remove false vertex due to float number precision *)
+        allDiscoveredVerticesValues = Map[Flatten[First[#]]&, discoveredVertices];
+        trueVerts = Select[discoveredVertices, isExtreme[Flatten[#[[1]]], allDiscoveredVerticesValues ]&];
+        Print[Length[trueVerts]];
         ,
 
         (* find instance *)
