@@ -37,14 +37,14 @@ If[computeDimensions && (forceUniformExpansion || PairsToGlue > 0 ),
 
 phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
-findVerticesBatchSize = 10000;
+findVerticesBatchSize = 1000;
 
 (* shape = "Tetrahedron"; *)
 (* shape = "Cube"; *)
 (* shape = "Dodecahedron"; *)
 
 (* shape = "Octahedron"; *)
-shape = "Icosahedron";
+(* shape = "Icosahedron"; *)
 
 (* shape = "RhombicDodecahedron"; *)
 (* shape = "RhombicTriacontahedron"; *)
@@ -52,7 +52,12 @@ shape = "Icosahedron";
 (* shape = "Cuboctahedron"; *)
 (* shape = "Icosidodecahedron"; *)
 
-(* shape = "SquareAntiprism"; *)
+shape = "PentagonalAntiprism";
+
+outputFolder = "output";
+dataFolder = "data";
+vertexFileName = shape <> "_vertices.wl";
+vertexFileNameFull = FileNameJoin[{outputFolder, dataFolder, vertexFileName}];
 
 Print["The shape is: ", shape];
 isExtreme[v_, verts_] := Module[
@@ -239,7 +244,7 @@ If[computeDimensions,
                 Exit[];
             ];
             preciseValues = pieceCoordinates/.maxSolution[[2]];
-            values = Round[preciseValues, 500 epsilon];
+            values = Round[preciseValues, 1000 epsilon];
             pieceAndMotion = {};
             For[pid = 1, pid <= faceCount, pid++,
                 AppendTo[pieceAndMotion, {pid, Round[ faceCenters[[pid]], epsilon ], values[[pid]]}];
@@ -262,7 +267,7 @@ If[computeDimensions,
         ];
 
         allDiscoveredVerticesValues = Map[Flatten[First[#]]&, discoveredVertices];
-        trueVerts = {};
+        feasibleSetVertices = {};
         For[vid = 1, vid <= Length[discoveredVertices], vid++,
             If[Mod[vid, 20] == 0,
                 Print[{DateString["ISODateTime"], "Checking vertex", vid, Length[discoveredVertices]}];
@@ -274,15 +279,16 @@ If[computeDimensions,
                 Print["True vertex:"];
                 Print[vert[[2]]];
                 Print[vert[[1]]];
-                AppendTo[trueVerts, vert];
+                AppendTo[feasibleSetVertices, vert];
             ];
         ];
         Print["after true vertex check"];
-        For[vid = 1, vid <= Length[trueVerts], vid++,
-            Print[ trueVerts[[vid]][[2]] ];
+        For[vid = 1, vid <= Length[feasibleSetVertices], vid++,
+            Print[ feasibleSetVertices[[vid]][[2]] ];
         ];
         Print["true vertex count"];
-        Print[Length[trueVerts]];
+        Print[Length[feasibleSetVertices]];
+        Save[vertexFileNameFull, feasibleSetVertices];
         ,
 
         (* find instance *)
