@@ -37,7 +37,7 @@ If[computeDimensions && (forceUniformExpansion || PairsToGlue > 0 ),
 
 phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
-findVerticesBatchSize = 1000;
+findVerticesBatchSize = 30000;
 
 (* shape = "Tetrahedron"; *)
 (* shape = "Cube"; *)
