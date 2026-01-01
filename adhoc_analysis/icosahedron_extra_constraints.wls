@@ -39,6 +39,8 @@ faces = PolyhedronData[shape, "FaceIndices"];
 
 faceCenters = Mean /@ (vertices[[#]] & /@ faces);
 faceCenters = N[faceCenters];
+faceCentersFlat = Flatten[faceCenters];
+
 faceCount = Length[faceCenters];
 pieceCount = faceCount; (* for convenience *)
 Print["piece (face) count: ", pieceCount];
@@ -54,22 +56,9 @@ pieceCoordinatesFlat = Flatten[pieceCoordinates];
 
 conditions = {};
 
-(* 5-fold symmetric motion: piece 1 going up (5-fold axis) *)
-(* AppendTo[conditions, pieceCoordinates[[1]][[1]] == 0.0 ];
-AppendTo[conditions, pieceCoordinates[[1]][[2]] == 0.0 ];
-AppendTo[conditions, pieceCoordinates[[1]][[3]] == 1.0 ];
- *)
-
-(* 5-fold symmetric motion: sum of piece 1~5 going up (5-fold axis) *)
-(* AppendTo[conditions, 
-    pieceCoordinates[[1]][[1]] + pieceCoordinates[[2]][[1]] + pieceCoordinates[[3]][[1]] + pieceCoordinates[[4]][[1]] + pieceCoordinates[[5]][[1]]== 0.0 ];
-AppendTo[conditions, 
-    pieceCoordinates[[1]][[2]] + pieceCoordinates[[2]][[2]] + pieceCoordinates[[3]][[2]] + pieceCoordinates[[4]][[2]] + pieceCoordinates[[5]][[2]] == 0.0 ];
-AppendTo[conditions, pieceCoordinates[[1]][[3]] == 1.0 ]; *)
-
-
 If[!computeDimensions,
-    AppendTo[conditions, pieceCoordinates[[1]][[3]] == 1.0 ];
+    (* AppendTo[conditions, pieceCoordinates[[1]][[3]] == 1.0 ]; *)
+    AppendTo[conditions, pieceCoordinatesFlat.faceCentersFlat == 10.0];
 ];
 
 
@@ -144,15 +133,16 @@ For[pairId = 1, pairId <= Length[secondNeighborFacePairs], pairId++,
     piece1Id = pair[[1]];
     piece2Id = pair[[2]];
     vector12 = N[faceCenters[[piece1Id]] - faceCenters[[piece2Id]]];
+    edgeCenter = N[faceCenters[[piece1Id]] + faceCenters[[piece2Id]]];
+    edgeCenter = edgeCenter/Norm[edgeCenter]*Norm[faceCenters[[1]]];
+    distancesFromEdgeCenterToFaceCenters = Map[ EuclideanDistance[edgeCenter, #]&, faceCenters ];
+    closestFaceId = Select[Range[Length[faceCenters]], distancesFromEdgeCenterToFaceCenters[[#]] < Min[distancesFromEdgeCenterToFaceCenters] + epsilon&][[1]];
+    newFaceNorm = edgeCenter - faceCenters[[closestFaceId]];
+    tripleProduct = Cross[vector12, newFaceNorm].edgeCenter;
 
-    crossProduct = Cross[pieceCoordinates[[piece1Id]] - pieceCoordinates[[piece2Id]], vector12];
-
-    For[dim = 1, dim <= 3, dim++,
-        AppendTo[conditions, - crossProduct[[dim]] >= -epsilon * 0.00001 ];
-        AppendTo[conditions, crossProduct[[dim]] >= -epsilon * 0.00001 ];
-    ];
+    (* AppendTo[conditions, Sign[tripleProduct] * ( pieceCoordinates[[piece1Id]] - pieceCoordinates[[piece2Id]] ).newFaceNorm >= - epsilon * 0.00001]; *)
+    AppendTo[conditions, ( pieceCoordinates[[piece1Id]] - pieceCoordinates[[piece2Id]] ).edgeCenter >= - epsilon * 0.00001];
 ];
-
 
 gluedGroups = {
     (* 8 way CM *)
