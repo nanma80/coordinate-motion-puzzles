@@ -121,11 +121,11 @@ For[pairId = 1, pairId <= Length[neighborFacePairs], pairId++,
     noOverlapCondition = ( pieceCoordinates[[piece1Id]] - pieceCoordinates[[piece2Id]] ).vector12 >= - epsilon * 0.00001 ;
     crossProduct = Cross[pieceCoordinates[[piece1Id]] - pieceCoordinates[[piece2Id]], vector12];
 
-    AppendTo[conditions, noOverlapCondition];
+(*     AppendTo[conditions, noOverlapCondition];
     For[dim = 1, dim <= 3, dim++,
         AppendTo[conditions, - crossProduct[[dim]] >= -epsilon * 0.00001 ];
         AppendTo[conditions, crossProduct[[dim]] >= -epsilon * 0.00001 ];
-    ];
+    ]; *)
 ];
 
 For[pairId = 1, pairId <= Length[secondNeighborFacePairs], pairId++,
@@ -134,14 +134,26 @@ For[pairId = 1, pairId <= Length[secondNeighborFacePairs], pairId++,
     piece2Id = pair[[2]];
     vector12 = N[faceCenters[[piece1Id]] - faceCenters[[piece2Id]]];
     edgeCenter = N[faceCenters[[piece1Id]] + faceCenters[[piece2Id]]];
-    edgeCenter = edgeCenter/Norm[edgeCenter]*Norm[faceCenters[[1]]];
+    (* edgeCenter = edgeCenter/Norm[edgeCenter]*Norm[faceCenters[[1]]]; *)
     distancesFromEdgeCenterToFaceCenters = Map[ EuclideanDistance[edgeCenter, #]&, faceCenters ];
     closestFaceId = Select[Range[Length[faceCenters]], distancesFromEdgeCenterToFaceCenters[[#]] < Min[distancesFromEdgeCenterToFaceCenters] + epsilon&][[1]];
     newFaceNorm = edgeCenter - faceCenters[[closestFaceId]];
     tripleProduct = Cross[vector12, newFaceNorm].edgeCenter;
 
+    AppendTo[conditions, -Sign[tripleProduct] * ( pieceCoordinates[[piece1Id]] - pieceCoordinates[[piece2Id]] ).newFaceNorm >= - epsilon * 0.00001];
     (* AppendTo[conditions, Sign[tripleProduct] * ( pieceCoordinates[[piece1Id]] - pieceCoordinates[[piece2Id]] ).newFaceNorm >= - epsilon * 0.00001]; *)
     AppendTo[conditions, ( pieceCoordinates[[piece1Id]] - pieceCoordinates[[piece2Id]] ).edgeCenter >= - epsilon * 0.00001];
+    (* AppendTo[conditions, -( pieceCoordinates[[piece1Id]] - pieceCoordinates[[piece2Id]] ).edgeCenter >= - epsilon * 0.00001]; *)
+
+    (* same constraints just like the first neighbors *)
+    noOverlapCondition = ( pieceCoordinates[[piece1Id]] - pieceCoordinates[[piece2Id]] ).vector12 >= - epsilon * 0.00001 ;
+    crossProduct = Cross[pieceCoordinates[[piece1Id]] - pieceCoordinates[[piece2Id]], vector12];
+
+    (* AppendTo[conditions, noOverlapCondition]; *)
+(*     For[dim = 1, dim <= 3, dim++,
+        AppendTo[conditions, - crossProduct[[dim]] >= -epsilon * 0.00001 ];
+        AppendTo[conditions, crossProduct[[dim]] >= -epsilon * 0.00001 ];
+    ]; *)
 ];
 
 gluedGroups = {
