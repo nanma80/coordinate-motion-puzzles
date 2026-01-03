@@ -12,10 +12,10 @@ PairsToGlue = 0;
 (* PairsToGlue = 3; *)
 
 findVertices = False;
-(* findVertices = True; *)
+findVertices = True;
 
 computeDimensions = False;
-computeDimensions = True;
+(* computeDimensions = True; *)
 
 If[forceUniformExpansion && PairsToGlue > 0,
     Print["Cannot both force uniform expansion and glue any pair of pieces at the same time. Will not glue any."];
@@ -37,7 +37,7 @@ If[computeDimensions && (forceUniformExpansion || PairsToGlue > 0 ),
 
 phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
-findVerticesBatchSize = 30000;
+findVerticesBatchSize = 1000;
 
 (* shape = "Tetrahedron"; *)
 (* shape = "Cube"; *)
@@ -47,12 +47,12 @@ findVerticesBatchSize = 30000;
 (* shape = "Icosahedron"; *)
 
 (* shape = "RhombicDodecahedron"; *)
-(* shape = "RhombicTriacontahedron"; *)
+shape = "RhombicTriacontahedron";
 
 (* shape = "Cuboctahedron"; *)
 (* shape = "Icosidodecahedron"; *)
 
-shape = "TetrahedronTenCompound";
+(* shape = "SquareAntiprism"; *)
 
 outputFolder = "output";
 dataFolder = "data";
@@ -115,9 +115,9 @@ pieceCoordinates = Array[x, {faceCount, 3}];
 pieceCoordinatesFlat = Flatten[pieceCoordinates];
 
 conditions = {};
-
-If[!computeDimensions,
-    AppendTo[conditions, pieceCoordinatesFlat.faceCentersFlat == Norm[faceCentersFlat]^2];
+offsetCondition = pieceCoordinatesFlat.faceCentersFlat == Norm[faceCentersFlat]^2;
+If[!computeDimensions && !findVertices,
+    AppendTo[conditions, offsetCondition];
 ];
 
 If[forceUniformExpansion,
@@ -173,7 +173,8 @@ For[gid = 1, gid <= PairsToGlue, gid++,
 Print["condition count:"];
 Print[Length[conditions]];
 
-If[computeDimensions,
+computeDimensionsModule[] := Module[
+    {},
     tightnessThreshold = 0.1;
     rows = {};
 
@@ -224,15 +225,27 @@ If[computeDimensions,
     Print[sv];
     Print["numerical Rank: ", numericalRank];
     numericalConeDimension = Length[rows[[1]] ] - numericalRank;
-    Print["numerical Dimension: ", numericalConeDimension],
+    Print["numerical Dimension: ", numericalConeDimension];
+    nullSpace = NullSpace[rows];
+    Print["nullSpace dimension: ", Length[nullSpace]];
+    nullSpace
+];
+
+If[computeDimensions,
+    computeDimensionsModule[],
 
     If[findVertices,
         (* find vertices *)
+        Print["To find vertices, first compute dimensions and a set of base vectors"];
+        nullSpace = computeDimensionsModule[];
+        AppendTo[conditions, offsetCondition];
+
         Print["Starting to find vertices of the feasible set"];
         discoveredVertices = {};
 
         For[directionId = 1, directionId <= findVerticesBatchSize, directionId++,
-            randomDirection = RandomVariate[NormalDistribution[], Length[pieceCoordinatesFlat]];
+            randomDirectionInNullSpace = RandomVariate[NormalDistribution[], Length[nullSpace]];
+            randomDirection = randomDirectionInNullSpace.nullSpace;
             combinedConditions = Apply[ And, conditions];
 
             maxSolution = NMaximize[
@@ -269,7 +282,7 @@ If[computeDimensions,
         allDiscoveredVerticesValues = Map[Flatten[First[#]]&, discoveredVertices];
         feasibleSetVertices = {};
         For[vid = 1, vid <= Length[discoveredVertices], vid++,
-            If[Mod[vid, 20] == 0,
+            If[Mod[vid, 10] == 0,
                 Print[{DateString["ISODateTime"], "Checking vertex", vid, Length[discoveredVertices]}];
             ];
             vert = discoveredVertices[[vid]];
@@ -288,6 +301,7 @@ If[computeDimensions,
         ];
         Print["true vertex count"];
         Print[Length[feasibleSetVertices]];
+        If[FileExistsQ[vertexFileNameFull], DeleteFile[vertexFileNameFull]];
         Save[vertexFileNameFull, feasibleSetVertices];
         ,
 
