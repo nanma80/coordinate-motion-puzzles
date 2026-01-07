@@ -12,7 +12,7 @@ PairsToGlue = 0;
 (* PairsToGlue = 3; *)
 
 findVertices = False;
-findVertices = True;
+(* findVertices = True; *)
 
 computeDimensions = False;
 (* computeDimensions = True; *)
@@ -37,7 +37,7 @@ If[computeDimensions && (forceUniformExpansion || PairsToGlue > 0 ),
 
 phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
-findVerticesBatchSize = 1000;
+findVerticesBatchSize = 200000;
 
 (* shape = "Tetrahedron"; *)
 (* shape = "Cube"; *)
@@ -244,6 +244,9 @@ If[computeDimensions,
         discoveredVertices = {};
 
         For[directionId = 1, directionId <= findVerticesBatchSize, directionId++,
+            If[Mod[directionId, 10000] == 0,
+                Print[{DateString["ISODateTime"], "Find vertex using random directions", directionId, findVerticesBatchSize}];
+            ];
             randomDirectionInNullSpace = RandomVariate[NormalDistribution[], Length[nullSpace]];
             randomDirection = randomDirectionInNullSpace.nullSpace;
             combinedConditions = Apply[ And, conditions];
@@ -257,7 +260,7 @@ If[computeDimensions,
                 Continue[];
             ];
             preciseValues = pieceCoordinates/.maxSolution[[2]];
-            values = Round[preciseValues, 1000 epsilon];
+            values = Round[preciseValues, 10000 epsilon];
             pieceAndMotion = {};
             For[pid = 1, pid <= faceCount, pid++,
                 AppendTo[pieceAndMotion, {pid, Round[ faceCenters[[pid]], epsilon ], values[[pid]]}];
@@ -298,10 +301,17 @@ If[computeDimensions,
                 AppendTo[feasibleSetVertices, vertexToSave];
             ];
         ];
-        Print["after true vertex check"];
+        Print["after true vertex check. sort by groupings"];
+        feasibleSetVertices = SortBy[feasibleSetVertices, #[["grouping"]]&];
+        Print["after sorting. all groupings"];
         For[vid = 1, vid <= Length[feasibleSetVertices], vid++,
-            Print[ feasibleSetVertices[[vid]]["grouping"] ];
+            Print[ feasibleSetVertices[[vid]][["grouping"]] ];
         ];
+        groupings = Map[#[["grouping"]]&, feasibleSetVertices ];
+        groupingsTally = Tally[groupings];
+        Print["tally of groupings"];
+        Map[Print, groupingsTally];
+
         Print["true vertex count"];
         Print[Length[feasibleSetVertices]];
         If[FileExistsQ[vertexFileNameFull], DeleteFile[vertexFileNameFull]];
