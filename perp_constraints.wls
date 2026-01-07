@@ -44,10 +44,10 @@ findVerticesBatchSize = 1000;
 (* shape = "Dodecahedron"; *)
 
 (* shape = "Octahedron"; *)
-(* shape = "Icosahedron"; *)
+shape = "Icosahedron";
 
 (* shape = "RhombicDodecahedron"; *)
-shape = "RhombicTriacontahedron";
+(* shape = "RhombicTriacontahedron"; *)
 
 (* shape = "Cuboctahedron"; *)
 (* shape = "Icosidodecahedron"; *)
@@ -56,7 +56,7 @@ shape = "RhombicTriacontahedron";
 
 outputFolder = "output";
 dataFolder = "data";
-vertexFileName = shape <> "_vertices.wl";
+vertexFileName = shape <> "_vertices.json";
 vertexFileNameFull = FileNameJoin[{outputFolder, dataFolder, vertexFileName}];
 
 Print["The shape is: ", shape];
@@ -292,17 +292,20 @@ If[computeDimensions,
                 Print["True vertex:"];
                 Print[vert[[2]]];
                 Print[vert[[1]]];
-                AppendTo[feasibleSetVertices, vert];
+                vertexToSave = <||>;
+                vertexToSave["grouping"] = vert[[2]];
+                vertexToSave["pieceAndMotion"] = Transpose[ {faceCenters, vert[[1]]} ];
+                AppendTo[feasibleSetVertices, vertexToSave];
             ];
         ];
         Print["after true vertex check"];
         For[vid = 1, vid <= Length[feasibleSetVertices], vid++,
-            Print[ feasibleSetVertices[[vid]][[2]] ];
+            Print[ feasibleSetVertices[[vid]]["grouping"] ];
         ];
         Print["true vertex count"];
         Print[Length[feasibleSetVertices]];
         If[FileExistsQ[vertexFileNameFull], DeleteFile[vertexFileNameFull]];
-        Save[vertexFileNameFull, feasibleSetVertices];
+        Export[vertexFileNameFull, feasibleSetVertices, "RawJSON", Compact -> True];
         ,
 
         (* find instance *)
