@@ -50,22 +50,45 @@ Print[vertexFileNameFull];
 feasibleSetVertices = Import[vertexFileNameFull, "RawJSON"];
 Print["Load this many vertices of the feasible set: ", feasibleSetVertices//Length];
 
+allGroupings = Map[#[["grouping"]]&, feasibleSetVertices];
+Print["All groupings:"];
+Map[Print, Tally[allGroupings]];
+
 (* 131 *)
 focusedGrouping = {5, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1};
 
 (* 60 *)
 (* focusedGrouping = {5, 5, 2, 2, 2, 1, 1, 1, 1}; *)
 
+(* focusedGrouping = {5, 5, 2, 2, 1, 1, 1, 1, 1, 1}; *)
+
+
+
 focusedVertices = {};
 motionNorms = {};
+countInFocusedGroup = 0;
 
 For[vid = 1, vid <= Length[feasibleSetVertices], vid++,
     vertex = feasibleSetVertices[[vid]];
     If[vertex[["grouping"]] == focusedGrouping,
+        countInFocusedGroup++;
         pieceAndMotion = vertex[["pieceAndMotion"]];
         motionVectors = Map[Last, pieceAndMotion];
         motion = Flatten[ motionVectors ];
-        Print[{vid, Norm[motion]}];
+        normMotion = Norm[motion];
+        If[normMotion < 4, Continue[]];
+        Print[countInFocusedGroup];
+
+        Print[{countInFocusedGroup, Norm[motion]}];
+        scaledMotionVectors = Map[#*Norm[#]&, motionVectors];
+        Print[Total[scaledMotionVectors]];
+        motionVectorTally = Tally[ Round[motionVectors, 10000 epsilon] ];
+        
+        Print[Select[motionVectorTally, #[[2]] == 5&]];
+        (* Print[Select[motionVectorTally, #[[2]] == 1&]]; *)
+        (* Print[motionVectorTally]; *)
+
+
         AppendTo[motionNorms, Norm[motion]];
         AppendTo[ focusedVertices,  motion];
     ];
@@ -73,13 +96,13 @@ For[vid = 1, vid <= Length[feasibleSetVertices], vid++,
 
 Print[Length[focusedVertices]];
 
-sameTestThreshold = epsilon * 100;
-Print["sameTestThreshold: ", sameTestThreshold];
-dedupedVertices = Union[focusedVertices, SameTest -> (EuclideanDistance[#1, #2] < sameTestThreshold &) ];
+(* sameTestThreshold = epsilon * 100;
+Print["sameTestThreshold: ", sameTestThreshold]; *)
+(* dedupedVertices = Union[focusedVertices, SameTest -> (EuclideanDistance[#1, #2] < sameTestThreshold &) ];
 Print["after dedup"];
 Print[Length[dedupedVertices]];
-
-Print[Tally[Round[motionNorms, 1000 epsilon]]];
+ *)
+(* Print[Tally[Round[motionNorms, 1000 epsilon]]]; *)
 
 (* 
 Three variants for grouping signature {5, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1}
