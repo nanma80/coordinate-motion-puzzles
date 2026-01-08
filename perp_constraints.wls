@@ -37,17 +37,17 @@ If[computeDimensions && (forceUniformExpansion || PairsToGlue > 0 ),
 
 phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
-findVerticesBatchSize = 200000;
+findVerticesBatchSize = 100;
 
 (* shape = "Tetrahedron"; *)
 (* shape = "Cube"; *)
 (* shape = "Dodecahedron"; *)
 
 (* shape = "Octahedron"; *)
-shape = "Icosahedron";
+(* shape = "Icosahedron"; *)
 
 (* shape = "RhombicDodecahedron"; *)
-(* shape = "RhombicTriacontahedron"; *)
+shape = "RhombicTriacontahedron";
 
 (* shape = "Cuboctahedron"; *)
 (* shape = "Icosidodecahedron"; *)
@@ -298,7 +298,10 @@ If[computeDimensions,
                 vertexToSave = <||>;
                 vertexToSave["grouping"] = vert[[2]];
                 vertexToSave["pieceAndMotion"] = Transpose[ {faceCenters, vert[[1]]} ];
-                AppendTo[feasibleSetVertices, vertexToSave];
+                AppendTo[feasibleSetVertices, vertexToSave],
+                Print["False vertex. Ignore"];
+                Print[vert[[2]]];
+                Print[vert[[1]]];
             ];
         ];
         Print["after true vertex check. sort by groupings"];
