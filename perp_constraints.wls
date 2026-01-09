@@ -37,7 +37,8 @@ If[computeDimensions && (forceUniformExpansion || PairsToGlue > 0 ),
 
 phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
-findVerticesBatchSize = 100;
+findVerticesBatchSize = 300;
+(* findVerticesBatchSize = 400000; *)
 
 (* shape = "Tetrahedron"; *)
 (* shape = "Cube"; *)
@@ -47,12 +48,12 @@ findVerticesBatchSize = 100;
 (* shape = "Icosahedron"; *)
 
 (* shape = "RhombicDodecahedron"; *)
-shape = "RhombicTriacontahedron";
+(* shape = "RhombicTriacontahedron"; *)
 
 (* shape = "Cuboctahedron"; *)
 (* shape = "Icosidodecahedron"; *)
 
-(* shape = "SquareAntiprism"; *)
+shape = "SquareAntiprism";
 
 outputFolder = "output";
 dataFolder = "data";
@@ -255,11 +256,27 @@ If[computeDimensions,
                 {randomDirection.pieceCoordinatesFlat, combinedConditions},
                 pieceCoordinatesFlat
             ];
-            If[maxSolution[[1]] == -Infinity,
-                (* Print["Find vertices: feasible set is empty. Cannot find vertices. Skipping"]; *)
+            If[Head[maxSolution] === NMaximize,
+                Print["Find vertices: maxSolution is not evaluated. Skipping"];
+                Print[maxSolution];
+                Continue[];
+            ];
+            If[Length[maxSolution] == 0,
+                Print["Find vertices: maxSolution is empty. Cannot find vertices. Skipping"];
+                Continue[];
+            ];
+            If[maxSolution[[1]] == -Infinity || maxSolution[[1]] == Infinity,
+                Print["Find vertices: feasible set is empty or the value is infinity. Cannot find vertices. Skipping"];
+                Print[maxSolution];
                 Continue[];
             ];
             preciseValues = pieceCoordinates/.maxSolution[[2]];
+            If[NumberQ[ preciseValues[[1]][[1]] ] == False,
+                Print["Find vertices: preciseValues is not a number. Skipping"];
+                Print[preciseValues];
+                Print[maxSolution];
+                Continue[];
+            ];
             values = Round[preciseValues, 10000 epsilon];
             pieceAndMotion = {};
             For[pid = 1, pid <= faceCount, pid++,
