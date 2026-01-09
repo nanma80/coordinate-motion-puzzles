@@ -104,6 +104,10 @@ TetrahedronFiveCompound: dim = 17, (+12 for centers of mass of 4 extra component
 OctahedronFiveCompound: dim = 27, (+12 for centers of mass of 4 extra components. Actual dim = 15 for 5 components, 3 per component, which is identical to octahedron)
 TetrahedronTenCompound: dim = 37, (+27 for centers of mass of 9 extra components. Actual dim = 10 for 10 components, 1 per component)
 
+Johnson:
+Gyrobifastigium: dim = 2, split in half: {4, 4}, and, 4 doubles {2, 2, 2, 2}
+GyroelongatedSquareDipyramid: dim = 7
+
 ====================
 Motions
 ====================
