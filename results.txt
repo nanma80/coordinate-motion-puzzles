@@ -96,7 +96,7 @@ Kepler-Poinsot (nonconvex):
 SmallStellatedDodecahedron: dim = 1 
 GreatDodecahedron: dim = 1
 GreatStellatedDodecahedron: dim = 1 
-GreatIcosahedron: dim = 9 (same grouping as icosahedron? maybe)
+GreatIcosahedron: dim = 9 (different groupings from icosahedron. See the vertices analysis)
 
 TetrahedronTwoCompound: dim = 5 (+3 for center of mass of an extra component. Actual dim = 2 for 2 components, 1 per component)
 CubeFiveCompound: dim = 17, (+12 for centers of mass of 4 extra components. Actual dim = 5 for 5 components, 1 per component)
