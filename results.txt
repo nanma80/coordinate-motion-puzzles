@@ -42,8 +42,8 @@ TruncatedDodecahedron: dim = 1
 Cuboctahedron: dim = 4, split in half
 Icosidodecahedron: dim = 6, split in half
 
-SmallRhombicuboctahedron (aka Rhombicuboctahedron): dim = 6, see motion above
-SmallRhombicosidodecahedron (aka Rhombicosidodecahedron): dim = 12
+SmallRhombicuboctahedron (aka Rhombicuboctahedron): dim = 6, see motion below
+SmallRhombicosidodecahedron (aka Rhombicosidodecahedron): dim = 12, over 200 vertices
 GreatRhombicuboctahedron (aka truncated cuboctahedron): dim = 1
 GreatRhombicosidodecahedron (aka truncated icosidodecahedron): dim = 1
 
@@ -87,8 +87,6 @@ DecagonalAntiprism: dim = 3
 
 Q: why are the dimensions of all antiprisms 3? There must be a common reason
 
-SnubSquareAntiprism: dim = 11
-
 Nonconvex and compounds:
 
 Kepler-Poinsot (nonconvex):
@@ -107,6 +105,15 @@ TetrahedronTenCompound: dim = 37, (+27 for centers of mass of 9 extra components
 Johnson:
 Gyrobifastigium: dim = 2, split in half: {4, 4}, and, 4 doubles {2, 2, 2, 2}
 GyroelongatedSquareDipyramid: dim = 7
+TriangularOrthobicupola: dim = 4, {{7, 7}, 1}; {{6, 4, 4}, 3}; {{2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1}, 1}
+Sphenocorona: dim = 2, {{13, 1}, 2}
+SquarePyramid: dim = 1, {4, 1}
+ElongatedTriangularPyramid: dim = 1, {{6, 1}, 1}
+Bilunabirotunda: dim = 3, {{7, 7}, 2}; {{3, 3, 1, 1, 1, 1, 1, 1, 1, 1}, 1}
+SnubDisphenoid: dim = 2, {{11, 1}, 2}
+SnubSquareAntiprism: dim = 11
+Sphenomegacorona: dim = 7
+Disphenocingulum: dim = 9
 
 ====================
 Motions
