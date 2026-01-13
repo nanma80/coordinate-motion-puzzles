@@ -6,6 +6,8 @@
 {4, 8}
 {5, 8}
 
+After stretching the z values of top and bottom, the motions around the triangles are now regular, and dimension is still 3. The set of possible motions are not changed.
+
  *)
 
 
@@ -17,7 +19,7 @@ PairsToGlue = 0;
 (* PairsToGlue = 3; *)
 
 findVertices = False;
-(* findVertices = True; *)
+findVertices = True;
 
 computeDimensions = False;
 (* computeDimensions = True; *)
@@ -43,12 +45,14 @@ If[computeDimensions && (forceUniformExpansion || PairsToGlue > 0 ),
 phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
 findVerticesBatchSize = 300;
+getAngle[v1_, v2_] := ArcCos[v1.v2/Norm[v1]/Norm[v2]]/Pi*180.;
+getAngleCos[v1_, v2_] := v1.v2/Norm[v1]/Norm[v2];
 
 shape = "SquareAntiprism";
 
 outputFolder = "output";
 dataFolder = "data";
-vertexFileName = shape <> "_vertices.json";
+vertexFileName = shape <> "_stretched_vertices.json";
 vertexFileNameFull = FileNameJoin[{outputFolder, dataFolder, vertexFileName}];
 
 Print["The shape is: ", shape];
@@ -87,8 +91,8 @@ edgeToFaces = Table[
    {i, Length[edges]}
 ];
 
-faceCenters = Mean /@ (vertices[[#]] & /@ faces);
-faceCenters = N[faceCenters];
+faceCentersSymbolic = Mean /@ (vertices[[#]] & /@ faces);
+faceCenters = N[faceCentersSymbolic];
 faceCentersFlat = Flatten[faceCenters];
 
 faceCount = Length[faces];
@@ -99,23 +103,12 @@ vector18 = faceCenters[[1]] - faceCenters[[8]];
 vector48 = faceCenters[[4]] - faceCenters[[8]];
 vector58 = faceCenters[[5]] - faceCenters[[8]];
 
-Print[vector18];
-Print[vector48];
-Print[vector58];
+nSolution = Solve[ getAngleCos[{0, 0, -z} - faceCenters[[8]], vector48 ] == getAngleCos[vector58, vector48 ], z ];
+replaceZ = z/.nSolution[[1]];
+Print["Replacing z value in face centers 1 and 2 by: ", replaceZ];
 
-Print[Norm[vector18]];
-Print[Norm[vector48]];
-Print[Norm[vector58]];
-
-getAngle[v1_, v2_] := ArcCos[v1.v2/Norm[v1]/Norm[v2]]/Pi*180.;
-
-Print[getAngle[vector18, vector48 ]];
-Print[getAngle[vector18, vector58 ]];
-Print[getAngle[vector48, vector58 ]];
-
-
-
-Exit[];
+faceCenters[[1]][[3]] = - replaceZ;
+faceCenters[[2]][[3]] = replaceZ;
 
 (* each face becomes a piece *)
 pieceCoordinates = Array[x, {faceCount, 3}];
@@ -340,8 +333,8 @@ If[computeDimensions,
 
         Print["true vertex count"];
         Print[Length[feasibleSetVertices]];
-        If[FileExistsQ[vertexFileNameFull], DeleteFile[vertexFileNameFull]];
-        Export[vertexFileNameFull, feasibleSetVertices, "RawJSON", Compact -> True];
+        (* If[FileExistsQ[vertexFileNameFull], DeleteFile[vertexFileNameFull]]; *)
+        (* Export[vertexFileNameFull, feasibleSetVertices, "RawJSON", Compact -> True]; *)
         ,
 
         (* find instance *)
