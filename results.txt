@@ -141,7 +141,16 @@ Polyhedra enumerated by vertex degrees:
 {TriakisTetrahedron, {{3, 4}, {6, 4}}, 8}: analyzed
 {TriangularCupola, {{3, 6}, {4, 3}}, 9}: too asymmetrical
 {TridiminishedIcosahedron, {{3, 6}, {4, 3}}, 9}: dim = 1; one of the groupings of icosahedron
+{AugmentedTruncatedDodecahedron, {{3, 50}, {4, 15}}, 65}: not interested, too complicated
+{Conext21Polyhedron, {{3, 56}, {4, 24}}, 80}: not interested, too complicated
+{MetabiaugmentedTruncatedDodecahedron, {{3, 40}, {4, 30}}, 70}: not interested, too complicated
+{ParabiaugmentedTruncatedDodecahedron, {{3, 40}, {4, 30}}, 70}: not interested, too complicated
+{PentagonalHexecontahedron, {{3, 80}, {5, 12}}, 92}: analyzed
+{PentagonalIcositetrahedron, {{3, 32}, {4, 6}}, 38}: analyzed
+{RhombicEnneacontahedron, {{3, 60}, {5, 12}, {6, 20}}, 92}: not interested, too complicated
+{TridiminishedRhombicosidodecahedron, {{3, 30}, {4, 15}}, 45}: not interested, too complicated
 
+{RhombicIcosahedron, {{3, 10}, {4, 10}, {5, 2}}, 22}: dim = 3, {{3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, 10}
 
 ====================
 Motions

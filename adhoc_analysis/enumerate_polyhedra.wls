@@ -20,8 +20,10 @@ interestingPolyhedra = {#, vertexDegrees[#], numVertices[vertexDegrees[#]]} & /@
           dt = vertexDegrees[p];
           n3 = countDeg[dt, 3];
           nOther = numVertices[dt] - n3;
-          n3 >= nOther &&
-          numVertices[dt] <= 32 &&
+          (* n3 >= nOther && *)
+          (* numVertices[dt] > 32 && *)
+          n3 < nOther &&
+          n3 >= 0.5 nOther &&
           maxDeg[dt] > 3,
           False
         ]
@@ -32,7 +34,7 @@ interestingPolyhedra = {#, vertexDegrees[#], numVertices[vertexDegrees[#]]} & /@
 Map[Print, interestingPolyhedra];
 
 (* 
-
+numVertices <= 32
 {AugmentedDodecahedron, {{3, 15}, {4, 5}, {5, 1}}, 21}
 {AugmentedHexagonalPrism, {{3, 8}, {4, 5}}, 13}
 {AugmentedPentagonalPrism, {{3, 6}, {4, 5}}, 11}
@@ -55,5 +57,36 @@ Map[Print, interestingPolyhedra];
 {TriakisTetrahedron, {{3, 4}, {6, 4}}, 8}
 {TriangularCupola, {{3, 6}, {4, 3}}, 9}
 {TridiminishedIcosahedron, {{3, 6}, {4, 3}}, 9}
+
+numVertices > 32
+{AugmentedTruncatedDodecahedron, {{3, 50}, {4, 15}}, 65}
+{Conext21Polyhedron, {{3, 56}, {4, 24}}, 80}
+{MetabiaugmentedTruncatedDodecahedron, {{3, 40}, {4, 30}}, 70}
+{ParabiaugmentedTruncatedDodecahedron, {{3, 40}, {4, 30}}, 70}
+{PentagonalHexecontahedron, {{3, 80}, {5, 12}}, 92}
+{PentagonalIcositetrahedron, {{3, 32}, {4, 6}}, 38}
+{RhombicEnneacontahedron, {{3, 60}, {5, 12}, {6, 20}}, 92}
+{TridiminishedRhombicosidodecahedron, {{3, 30}, {4, 15}}, 45}
+
+
+n3 < nOther && n3 >= 0.5 nOther:
+
+{AugmentedTridiminishedIcosahedron, {{3, 4}, {4, 6}}, 10}
+{AugmentedTruncatedTetrahedron, {{3, 6}, {4, 9}}, 15}
+{{Dipyramid, 3}, {{3, 2}, {4, 3}}, 5}
+{ElongatedPentagonalCupola, {{3, 10}, {4, 15}}, 25}
+{ElongatedPentagonalPyramid, {{3, 5}, {4, 5}, {5, 1}}, 11}
+{ElongatedPentagonalRotunda, {{3, 10}, {4, 20}}, 30}
+{ElongatedSquareCupola, {{3, 8}, {4, 12}}, 20}
+{ElongatedSquarePyramid, {{3, 4}, {4, 5}}, 9}
+{ElongatedTriangularCupola, {{3, 6}, {4, 9}}, 15}
+{GyrateBidiminishedRhombicosidodecahedron, {{3, 20}, {4, 30}}, 50}
+{MetabiaugmentedDodecahedron, {{3, 10}, {4, 10}, {5, 2}}, 22}
+{MetabidiminishedRhombicosidodecahedron, {{3, 20}, {4, 30}}, 50}
+{ParabiaugmentedDodecahedron, {{3, 10}, {4, 10}, {5, 2}}, 22}
+{ParabidiminishedRhombicosidodecahedron, {{3, 20}, {4, 30}}, 50}
+{RhombicIcosahedron, {{3, 10}, {4, 10}, {5, 2}}, 22}
+{TriaugmentedTruncatedDodecahedron, {{3, 30}, {4, 45}}, 75}
+
 
  *)

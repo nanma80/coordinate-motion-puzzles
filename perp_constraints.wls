@@ -12,7 +12,7 @@ PairsToGlue = 0;
 (* PairsToGlue = 3; *)
 
 findVertices = False;
-(* findVertices = True; *)
+findVertices = True;
 
 computeDimensions = False;
 (* computeDimensions = True; *)
@@ -53,8 +53,8 @@ findVerticesBatchSize = 300;
 (* shape = "Cuboctahedron"; *)
 (* shape = "Icosidodecahedron"; *)
 
-shape = "SquareAntiprism";
-(* shape = "TetragonalAntiwedge"; *)
+(* shape = "SquareAntiprism"; *)
+shape = "RhombicIcosahedron";
 
 outputFolder = "output";
 dataFolder = "data";
