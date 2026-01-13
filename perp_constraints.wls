@@ -54,6 +54,7 @@ findVerticesBatchSize = 300;
 (* shape = "Icosidodecahedron"; *)
 
 shape = "SquareAntiprism";
+(* shape = "TetragonalAntiwedge"; *)
 
 outputFolder = "output";
 dataFolder = "data";
