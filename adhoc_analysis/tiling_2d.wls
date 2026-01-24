@@ -12,10 +12,10 @@ PairsToGlue = 0;
 (* PairsToGlue = 3; *)
 
 findVertices = False;
-(* findVertices = True; *)
+findVertices = True;
 
 computeDimensions = False;
-computeDimensions = True;
+(* computeDimensions = True; *)
 
 If[forceUniformExpansion && PairsToGlue > 0,
     Print["Cannot both force uniform expansion and glue any pair of pieces at the same time. Will not glue any."];
@@ -39,10 +39,10 @@ phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
 findVerticesBatchSize = 300;
 (* findVerticesBatchSize = 400000; *)
-targetPieceCount = 32;
+targetPieceCount = 20;
 
 (* shape = "HexagonalTiling"; *)
-shape = "SquareTiling";
+(* shape = "SquareTiling"; *)
 (* shape = "TriangularTiling"; *)
 
 (* shape = "TruncatedHexagonalTiling"; *)
@@ -55,7 +55,7 @@ shape = "SquareTiling";
 (* shape = "ElongatedTriangularTiling"; *)
 
 (* shape = "RhombilleTiling"; *)
-(* shape = "CairoPentagonalTiling"; *)
+shape = "CairoPentagonalTiling";
 (* shape = "FloretPentagonalTiling"; *)
 
 outputFolder = FileNameJoin[{"..", "output"}];
@@ -166,7 +166,7 @@ plot = Graphics3D[
   Lighting -> "Neutral"
 ];
 
-Export["../output/test_plot/"<> shape <> ".png", plot];
+Export["../output/test_plot/"<> shape <> "_" <> ToString[pieceCount] <> ".png", plot];
 
 (* Exit[]; *)
 
@@ -441,8 +441,7 @@ Print["piece (face) count: ", pieceCount];
 
 (* 
 If dim increases when the number of pieces go up, is this due to longer boundaries?
-
-If dim decreases when the number of pieces go up, it means the dim is over estimated.
+If dim decreases when the number of pieces go up, it means the dim is over estimated?
 
 HexagonalTiling:
     dim = 1 for piece count = 12
@@ -465,7 +464,8 @@ RhombilleTiling:
     dim = 14 for piece count = 50
     dim = 14 for piece count = 60
     dim = 20 for piece count = 104
-    verdict?? dim -> ?? when piece count -> infinity. probably increasing
+    dim = 24 for piece count = 130
+    likely dim -> infinity when piece count -> infinity
 
 TruncatedHexagonalTiling:
     dim = 1 for piece count = 19
@@ -504,6 +504,7 @@ ElongatedTriangularTiling
     dim -> infinity when piece count -> infinity
 
 CairoPentagonalTiling
+    dim = 2 for piece count 14
     dim = 2 for piece count 32
     dim = 2 for piece count 52
     dim = 2 for piece count 84
