@@ -39,16 +39,14 @@ phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
 findVerticesBatchSize = 300;
 (* findVerticesBatchSize = 400000; *)
-targetPieceCount = 20;
+targetPieceCount = 32;
 
-(* shape = "RhombilleTiling"; *)
 (* shape = "HexagonalTiling"; *)
-(* shape = "SquareTiling"; *)
+shape = "SquareTiling";
 (* shape = "TriangularTiling"; *)
 
-(* not reliable below this line: edges are incomplete *)
 (* shape = "TruncatedHexagonalTiling"; *)
-shape = "TruncatedSquareTiling";
+(* shape = "TruncatedSquareTiling"; *)
 (* shape = "SmallRhombitrihexagonalTiling"; *)
 (* shape = "GreatRhombitrihexagonalTiling"; *)
 (* shape = "SnubHexagonalTiling"; *)
@@ -56,6 +54,9 @@ shape = "TruncatedSquareTiling";
 (* shape = "TrihexagonalTiling"; *)
 (* shape = "ElongatedTriangularTiling"; *)
 
+(* shape = "RhombilleTiling"; *)
+(* shape = "CairoPentagonalTiling"; *)
+(* shape = "FloretPentagonalTiling"; *)
 
 outputFolder = FileNameJoin[{"..", "output"}];
 dataFolder = "data";
@@ -79,6 +80,10 @@ isExtreme[v_, verts_] := Module[
   minval = res[[1]];
   minval > 10 epsilon
 ];
+getEdgesFromFace[face_] := Table[{face[[i+1]], face[[Mod[i+1, Length[face]] + 1]]}, {i, 0, Length[face] - 1}];
+ApproxSamePoint[point1_, point2_] := Norm[N[point1 - point2]] < 0.00001;
+sameCenter[set1_, set2_] := ApproxSamePoint[Total[N[set1]], Total[N[set2]]];
+sameEdge[e1_, e2_] := sameCenter[e1, e2] && ((ApproxSamePoint[e1[[1]], e2[[1]]] && ApproxSamePoint[e1[[2]], e2[[2]]] ) || (ApproxSamePoint[e1[[1]], e2[[2]]] && ApproxSamePoint[e1[[2]], e2[[1]]] ));
 
 tiling = Entity["PeriodicTiling", shape];
 
@@ -101,48 +106,40 @@ For[polygonRadius = 1, pieceCount < targetPieceCount, polygonRadius++,
     polygons = Select[flatPolygons, Norm[Mean[#]] < polygonRadius &];
     pieceCount = Length[polygons];
 ];
-Print[N[polygons]];
 
 faceCenters = Map[Mean, polygons];
 faceCenters = Map[{N[#[[1]]], N[#[[2]]], 0.0}&, faceCenters];
 faceCentersFlat = Flatten[faceCenters];
-Print["piece (face) centers"];
-Print[faceCenters];
 
 faceCount = Length[faceCenters];
 pieceCount = faceCount; (* for convenience *)
 Print["piece (face) count: ", pieceCount];
+Print[];
 
-closestIndex = First[Ordering[Norm /@ faceCenters, 1]];
-Print["closestIndex: ", closestIndex];
-
-minFaceCenterDistance = 1000000;
-
-For[fid = 1, fid <= faceCount, fid++,
-    If[fid == closestIndex, Continue[]];
-    distance = N[ EuclideanDistance[faceCenters[[closestIndex]], faceCenters[[fid]]] ];
-    minFaceCenterDistance = Min[minFaceCenterDistance, distance];
-];
-Print["minFaceCenterDistance: ", minFaceCenterDistance];
+edgesByFace = Map[getEdgesFromFace, N[polygons]];
 
 neighborFacePairs = {};
+edgePerpDirections = {};
 
 For[f1id = 1, f1id <= faceCount, f1id++,
     For[f2id = f1id + 1, f2id <= faceCount, f2id++,
-        distance = N[ EuclideanDistance[faceCenters[[f1id]], faceCenters[[f2id]]] ];
-        If[distance < minFaceCenterDistance + epsilon,
-            AppendTo[neighborFacePairs, {f1id, f2id}];
+        edgesFace1 = edgesByFace[[f1id]];
+        edgesFace2 = edgesByFace[[f2id]];
+        neighborFlag = False;
+        For[e1id = 1, e1id <= Length[edgesFace1] && neighborFlag == False, e1id++,
+            For[e2id = 1, e2id <= Length[edgesFace2] && neighborFlag == False, e2id++,
+                If[sameEdge[edgesFace1[[e1id]], edgesFace2[[e2id]]],
+                    neighborFlag = True;
+                    perpDirection = (edgesFace1[[e1id]][[1]] - edgesFace1[[e1id]][[2]] ).RotationMatrix[Pi/2];
+                    AppendTo[neighborFacePairs, {f1id, f2id}];
+                    AppendTo[edgePerpDirections, perpDirection];
+                ];
+            ];
         ];
     ];
 ];
 
-
-Print["edges by face ids:"];
-Print[neighborFacePairs];
 Print["edge count: ", Length[neighborFacePairs]];
-
-edgesToCloestIndex = Select[neighborFacePairs, #[[1]] == closestIndex || #[[2]] == closestIndex & ];
-Print["Edgest to the closest face: ", edgesToCloestIndex, " edge count to the closest face: ", Length[edgesToCloestIndex]];
 
 r = 0.1;
 ballsPlot = Sphere[#, r] & /@ faceCenters;
@@ -169,9 +166,9 @@ plot = Graphics3D[
   Lighting -> "Neutral"
 ];
 
-Export["test_plot/"<> shape <> ".png", plot];
+Export["../output/test_plot/"<> shape <> ".png", plot];
 
-Exit[];
+(* Exit[]; *)
 
 (* each face becomes a piece *)
 pieceCoordinates = Array[x, {faceCount, 3}];
@@ -202,9 +199,14 @@ For[pairId = 1, pairId <= Length[neighborFacePairs], pairId++,
     face1 = pair[[1]];
     face2 = pair[[2]];
     vector12 = N[faceCenters[[face1]] - faceCenters[[face2]]];
+    edgePerpDirection = edgePerpDirections[[pairId]];
+    normalVector = {edgePerpDirection[[1]], edgePerpDirection[[2]], 0.0 };
 
-    noOverlapCondition = ( pieceCoordinates[[face1]] - pieceCoordinates[[face2]] ).vector12 >= - epsilon * 0.00001 ;
-    crossProduct = Cross[pieceCoordinates[[face1]] - pieceCoordinates[[face2]], vector12];
+    (* there's no guarantee normalVector will point to face1 or face2. We quickly check here to ensure it's pointing to face1 *)
+    If[normalVector.vector12 < 0, normalVector = - normalVector];
+
+    noOverlapCondition = ( pieceCoordinates[[face1]] - pieceCoordinates[[face2]] ).normalVector >= - epsilon * 0.00001 ;
+    crossProduct = Cross[pieceCoordinates[[face1]] - pieceCoordinates[[face2]], normalVector];
 
     AppendTo[conditions, noOverlapCondition];
     For[dim = 1, dim <= 3, dim++,
@@ -432,50 +434,84 @@ If[computeDimensions,
 
 ];
 
-Print["The shape is: ", shape];
-
+Print["shape: ", shape];
+Print["piece (face) count: ", pieceCount];
 
 
 
 (* 
+If dim increases when the number of pieces go up, is this due to longer boundaries?
+
+If dim decreases when the number of pieces go up, it means the dim is over estimated.
 
 HexagonalTiling:
-    dim = 1 for target piece count = 10, piece count = 12
-    dim = 1 for target piece count = 20, piece count = 30
-    dim = 1 unchanged when piece count -> infinity
+    dim = 1 for piece count = 12
+    dim = 1 for piece count = 30
+    dim = 1 Should be correct, because all vertices are degree 3
 
 SquareTiling:
-    dim = 6 for targetPieceCount = 10; piece count = 12
-    dim = 10 for targetPieceCount = 20; piece count = 32
+    dim = 6 for piece count = 12
+    dim = 10 for piece count = 32
     dim -> infinity when piece count -> infinity
 
 TriangularTiling:
-    dim = 16 for targetPieceCount = 10; piece count = 24
-    dim = 38 for targetPieceCount = 30; piece count = 76
+    dim = 16 for piece count = 24
+    dim = 38 for piece count = 76
     dim -> infinity when piece count -> infinity
 
 RhombilleTiling:
-    dim = 7 for targetPieceCount = 10; piece count = 16
-    dim = 7 for targetPieceCount = 20; piece count = 20
-    dim = 14 for targetPieceCount = 30; piece count = 52
-    dim -> infinity when piece count -> infinity
+    dim = 7 for piece count = 14
+    dim = 7 for piece count = 20
+    dim = 14 for piece count = 50
+    dim = 14 for piece count = 60
+    dim = 20 for piece count = 104
+    verdict?? dim -> ?? when piece count -> infinity. probably increasing
 
-Not reliable below this line
+TruncatedHexagonalTiling:
+    dim = 1 for piece count = 19
+    dim = 13 for piece count = 31
+    dim = 1 for piece count = 55
+    dim = 1 Should be correct, because all vertices are degree 3
 
-
-TruncatedHexagonalTiling: dim = 1
-TruncatedSquareTiling: 
+TruncatedSquareTiling:
+    dim = 1 for piece count = 21
 
 SmallRhombitrihexagonalTiling:
+    dim = 6 for piece count = 13
+    dim = 7 for piece count = 25
+    dim = 13 for piece count = 43
+    dim = 19 for piece count = 79
+    likely dim -> infinity when piece count -> infinity. probably increasing
 
 GreatRhombitrihexagonalTiling
+    dim = 1 for piece count = 25
+    Should be 1, because all vertices are degree 3
 
-shape = "SnubHexagonalTiling";
+SnubHexagonalTiling
+    dim = 18 for piece count 37
+    very likely dim -> infinity when piece count -> infinity
 
-shape = "ElongatedTriangularTiling";
+SnubSquareTiling
+    dim = 27 for piece count 48
+    very likely dim -> infinity when piece count -> infinity
 
-shape = "SnubSquareTiling";
-shape = "TrihexagonalTiling";
+TrihexagonalTiling
+    dim = 12 for piece count 37
+    dim -> infinity when piece count -> infinity
+
+ElongatedTriangularTiling
+    dim = 14 for piece count 21
+    dim -> infinity when piece count -> infinity
+
+CairoPentagonalTiling
+    dim = 2 for piece count 32
+    dim = 2 for piece count 52
+    dim = 2 for piece count 84
+    dim = 2 when piece count -> infinity
+
+FloretPentagonalTiling
+    dim = 1 for piece count 24
+    dim = 1 Should be correct, degree-3 vertices are connected
 
 
 full list supported by wolfram:
