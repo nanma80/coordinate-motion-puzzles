@@ -260,25 +260,25 @@ computeExtremeRays[] := Module[
     feasibleSetVertices = {};
     For[vid = 1, vid <= Length[discoveredVertices], vid++,
         If[Mod[vid, 10] == 0,
-            Print[{DateString["ISODateTime"], "Checking vertex", vid, Length[discoveredVertices]}];
+            Print[{DateString["ISODateTime"], "Checking extreme rays", vid, Length[discoveredVertices]}];
         ];
         vert = discoveredVertices[[vid]];
         
         vertexIsTrue = isExtreme[Flatten[vert[[1]]], allDiscoveredVerticesValues ];
         If[vertexIsTrue,
-            Print["True vertex:"];
+            Print["True extreme ray:"];
             Print[vert[[2]]];
             Print[vert[[1]]];
             vertexToSave = <||>;
             vertexToSave["grouping"] = vert[[2]];
             vertexToSave["pieceAndMotion"] = Transpose[ {faceCenters, vert[[1]]} ];
             AppendTo[feasibleSetVertices, vertexToSave],
-            Print["False vertex. Ignore"];
+            Print["False extreme ray. Ignore"];
             Print[vert[[2]]];
             Print[vert[[1]]];
         ];
     ];
-    Print["after true vertex check. sort by groupings"];
+    Print["after true extreme ray check. sort by groupings"];
     feasibleSetVertices = SortBy[feasibleSetVertices, #[["grouping"]]&];
     Print["after sorting. all groupings"];
     For[vid = 1, vid <= Length[feasibleSetVertices], vid++,
@@ -289,7 +289,7 @@ computeExtremeRays[] := Module[
     Print["tally of groupings"];
     Map[Print, groupingsTally];
 
-    Print["true vertex count"];
+    Print["true extreme ray count"];
     Print[Length[feasibleSetVertices]];
 ];
 
