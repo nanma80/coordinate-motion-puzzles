@@ -39,16 +39,16 @@ phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
 findVerticesBatchSize = 300;
 (* findVerticesBatchSize = 400000; *)
-targetPieceCount = 10;
+targetPieceCount = 20;
 
-shape = "RhombilleTiling";
+(* shape = "RhombilleTiling"; *)
 (* shape = "HexagonalTiling"; *)
 (* shape = "SquareTiling"; *)
 (* shape = "TriangularTiling"; *)
-(* shape = "TruncatedHexagonalTiling"; *)
-(* shape = "TruncatedSquareTiling"; *)
 
 (* not reliable below this line: edges are incomplete *)
+(* shape = "TruncatedHexagonalTiling"; *)
+shape = "TruncatedSquareTiling";
 (* shape = "SmallRhombitrihexagonalTiling"; *)
 (* shape = "GreatRhombitrihexagonalTiling"; *)
 (* shape = "SnubHexagonalTiling"; *)
@@ -83,52 +83,27 @@ isExtreme[v_, verts_] := Module[
 tiling = Entity["PeriodicTiling", shape];
 
 cell = tiling["PrimitiveUnit"];
+primitivePolygons = Cases[cell, Polygon[p_] :> p, All];
 
-centers0 = FullSimplify[ Mean /@ (Cases[cell, Polygon[p_] :> p, All]) ];
-Print["centers0: ", centers0];
 lat = tiling["TranslationVectors"][];
-(* poly = First @ Cases[cell, _Polygon, All];
-polys = Cases[cell, _Polygon, All];
-
-
- *)
-faceCenters = RegionCentroid /@ translatedPolys;
-adjacentQ[p_, q_] := RegionDimension[RegionIntersection[p, q]] == 1;
-
-neighborFacePairs =
-  Flatten[
-    Table[
-      If[adjacentQ[translatedPolys[[i]], translatedPolys[[j]]],
-        {i, j},
-        Nothing
-      ],
-      {i, Length[translatedPolys]}, {j, i + 1, Length[translatedPolys]}
-    ],
-    1
-  ];
-
 
 pieceCount = 0;
 
 For[polygonRadius = 1, pieceCount < targetPieceCount, polygonRadius++,
     Print["Building faces. Radius = ", polygonRadius, " pieceCount so far: ", pieceCount];
     nmax = Ceiling[polygonRadius/Min[Norm /@ lat]];
-    Print["nmax: ", nmax];
-    faceCenters =
-      Select[
-        Flatten[
-          Table[
-            # + i lat[[1]] + j lat[[2]] & /@ centers0,
-            {i, -nmax, nmax}, {j, -nmax, nmax}
-          ],
-          2
-        ],
-        Norm[#] <= polygonRadius &
-      ];
-    Print["faceCenters: ", faceCenters];
-    pieceCount = Length[faceCenters];
-];
+    polygonsTable = Table[
+        Map[# + i lat[[1]] + j lat[[2]] &, primitivePolygons, {2}],
+        {i, -nmax, nmax}, {j, -nmax, nmax}
+    ];
 
+    flatPolygons = FullSimplify[Flatten[polygonsTable, 2]];
+    polygons = Select[flatPolygons, Norm[Mean[#]] < polygonRadius &];
+    pieceCount = Length[polygons];
+];
+Print[N[polygons]];
+
+faceCenters = Map[Mean, polygons];
 faceCenters = Map[{N[#[[1]]], N[#[[2]]], 0.0}&, faceCenters];
 faceCentersFlat = Flatten[faceCenters];
 Print["piece (face) centers"];
@@ -195,6 +170,8 @@ plot = Graphics3D[
 ];
 
 Export["test_plot/"<> shape <> ".png", plot];
+
+Exit[];
 
 (* each face becomes a piece *)
 pieceCoordinates = Array[x, {faceCount, 3}];
