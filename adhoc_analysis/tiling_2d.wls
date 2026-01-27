@@ -12,10 +12,10 @@ PairsToGlue = 0;
 (* PairsToGlue = 3; *)
 
 findVertices = False;
-findVertices = True;
+(* findVertices = True; *)
 
 computeDimensions = False;
-(* computeDimensions = True; *)
+computeDimensions = True;
 
 If[forceUniformExpansion && PairsToGlue > 0,
     Print["Cannot both force uniform expansion and glue any pair of pieces at the same time. Will not glue any."];
@@ -39,7 +39,7 @@ phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
 findVerticesBatchSize = 300;
 (* findVerticesBatchSize = 400000; *)
-targetPieceCount = 20;
+targetPieceCount = 131;
 
 (* shape = "HexagonalTiling"; *)
 (* shape = "SquareTiling"; *)
@@ -54,8 +54,8 @@ targetPieceCount = 20;
 (* shape = "TrihexagonalTiling"; *)
 (* shape = "ElongatedTriangularTiling"; *)
 
-(* shape = "RhombilleTiling"; *)
-shape = "CairoPentagonalTiling";
+shape = "RhombilleTiling";
+(* shape = "CairoPentagonalTiling"; *)
 (* shape = "FloretPentagonalTiling"; *)
 
 outputFolder = FileNameJoin[{"..", "output"}];
@@ -465,6 +465,7 @@ RhombilleTiling:
     dim = 14 for piece count = 60
     dim = 20 for piece count = 104
     dim = 24 for piece count = 130
+    dim = 26 for piece count = 188
     likely dim -> infinity when piece count -> infinity
 
 TruncatedHexagonalTiling:
@@ -481,6 +482,8 @@ SmallRhombitrihexagonalTiling:
     dim = 7 for piece count = 25
     dim = 13 for piece count = 43
     dim = 19 for piece count = 79
+    dim = 31 for piece count = 109
+    dim = 37 for piece count = 145
     likely dim -> infinity when piece count -> infinity. probably increasing
 
 GreatRhombitrihexagonalTiling
