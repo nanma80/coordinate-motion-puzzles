@@ -39,7 +39,7 @@ phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
 findVerticesBatchSize = 300;
 (* findVerticesBatchSize = 400000; *)
-targetPieceCount = 131;
+targetPieceCount = 41;
 
 (* shape = "HexagonalTiling"; *)
 (* shape = "SquareTiling"; *)
@@ -54,9 +54,10 @@ targetPieceCount = 131;
 (* shape = "TrihexagonalTiling"; *)
 (* shape = "ElongatedTriangularTiling"; *)
 
-shape = "RhombilleTiling";
+(* shape = "RhombilleTiling"; *)
 (* shape = "CairoPentagonalTiling"; *)
-(* shape = "FloretPentagonalTiling"; *)
+(* shape = "PortugalTiling"; *)
+shape = "TrihexAndHexTiling";
 
 outputFolder = FileNameJoin[{"..", "output"}];
 dataFolder = "data";
@@ -517,10 +518,79 @@ FloretPentagonalTiling
     dim = 1 for piece count 24
     dim = 1 Should be correct, degree-3 vertices are connected
 
+PortugalTiling
+    dim = 2 for 28 pieces
+    dim = 2 for 44 pieces
+    dim = 2 when piece count -> infinity
+    Worth making
 
-full list supported by wolfram:
+TrihexAndHexTiling
+    dim = 3 for 25 pieces
+    dim = 6 for 40 pieces (3 dangling pieces)
 
-{SquareTiling, HexagonalTiling, TriangularTiling, TrihexagonalTiling, SmallRhombitrihexagonalTiling, TruncatedSquareTiling, SnubSquareTiling, TruncatedHexagonalTiling, ElongatedTriangularTiling, GreatRhombitrihexagonalTiling, SnubHexagonalTiling, RhombilleTiling, DeltoidalTrihexagonalTiling, TetrakisSquareTiling, CairoPentagonalTiling, TriakisTriangularTiling, PrismaticPentagonalTiling, BisectedHexagonalTiling, FloretPentagonalTiling, DellaRobbiaWeaveTiling, PortugalTiling, StackBondTiling, HerringboneTiling, BasketweaveTiling, PersianHexagonalWeaveTiling, HopscotchTiling, StretcherBondTiling, PinwheelTiling, BrickworkSquareTiling, ChickenwireTiling, CorridorTiling, CorridorHorizontalTiling, BrickweaveTiling, TrellisTiling, HeeschIsohedralTiling, ArbitraryTriangleTiling, ArbitraryQuadrilateralTiling, PPentominoTiling, ChevronTiling, ShingleTiling, ZigzagTiling, KiteTiling, FalseCubicTiling, TrihexAndHexTiling, GlideReflectionTiling, PentagonType1Tiling, PentagonType2Tiling, PentagonType3Tiling, PentagonType4Tiling, PentagonType5Tiling, PentagonType6Tiling, PentagonType7Tiling, PentagonType8Tiling, PentagonType9Tiling, PentagonType10Tiling, PentagonType11Tiling, PentagonType12Tiling, PentagonType13Tiling, PentagonType14Tiling, PentagonType15Tiling}
+Limitation of edge detection: vertices cannot be on an edge.
 
+full list supported by wolfram. all dimensions:
+
+SquareTiling inf
+HexagonalTiling 1
+TriangularTiling inf
+TrihexagonalTiling inf
+SmallRhombitrihexagonalTiling inf
+TruncatedSquareTiling 1
+SnubSquareTiling inf
+TruncatedHexagonalTiling 1
+ElongatedTriangularTiling inf
+GreatRhombitrihexagonalTiling 1
+SnubHexagonalTiling inf
+RhombilleTiling inf
+DeltoidalTrihexagonalTiling inf
+TetrakisSquareTiling inf
+CairoPentagonalTiling 2
+TriakisTriangularTiling inf
+PrismaticPentagonalTiling inf
+BisectedHexagonalTiling inf
+FloretPentagonalTiling 1
+DellaRobbiaWeaveTiling: cannot detect edges
+PortugalTiling 2
+StackBondTiling inf
+HerringboneTiling: cannot detect edges
+BasketweaveTiling inf
+PersianHexagonalWeaveTiling: cannot detect edges
+HopscotchTiling: cannot detect edges
+StretcherBondTiling inf
+PinwheelTiling: cannot detect edges
+BrickworkSquareTiling inf
+ChickenwireTiling 1
+CorridorTiling inf
+CorridorHorizontalTiling inf
+BrickweaveTiling: cannot detect all edges
+TrellisTiling inf
+HeeschIsohedralTiling: cannot detect all edges
+ArbitraryTriangleTiling free parameters
+ArbitraryQuadrilateralTiling: free parameters
+PPentominoTiling: cannot detect edges
+ChevronTiling inf
+ShingleTiling: cannot detect all edges
+ZigzagTiling: cannot detect all edges
+KiteTiling inf
+FalseCubicTiling should be 1, but the analysis shows inf
+TrihexAndHexTiling ???
+GlideReflectionTiling inf
+PentagonType1Tiling: free parameters
+PentagonType2Tiling: free parameters
+PentagonType3Tiling: free parameters
+PentagonType4Tiling: free parameters
+PentagonType5Tiling: free parameters
+PentagonType6Tiling: free parameters
+PentagonType7Tiling: free parameters
+PentagonType8Tiling: free parameters
+PentagonType9Tiling: free parameters
+PentagonType10Tiling: free parameters
+PentagonType11Tiling: free parameters
+PentagonType12Tiling: free parameters
+PentagonType13Tiling: free parameters
+PentagonType14Tiling inf
+PentagonType15Tiling inf
 
  *)
