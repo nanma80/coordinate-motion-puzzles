@@ -39,7 +39,7 @@ phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
 findVerticesBatchSize = 300;
 (* findVerticesBatchSize = 400000; *)
-targetPieceCount = 107;
+targetPieceCount = 25;
 
 (* shape = "HexagonalTiling"; *)
 (* shape = "SquareTiling"; *)
@@ -130,6 +130,7 @@ For[f1id = 1, f1id <= faceCount, f1id++,
         For[e1id = 1, e1id <= Length[edgesFace1] && neighborFlag == False, e1id++,
             For[e2id = 1, e2id <= Length[edgesFace2] && neighborFlag == False, e2id++,
                 If[sameEdge[edgesFace1[[e1id]], edgesFace2[[e2id]]],
+                    (* for nonconvex tiles, comment out the following line *)
                     neighborFlag = True;
                     perpDirection = (edgesFace1[[e1id]][[1]] - edgesFace1[[e1id]][[2]] ).RotationMatrix[Pi/2];
                     AppendTo[neighborFacePairs, {f1id, f2id}];
@@ -524,12 +525,7 @@ PortugalTiling
     dim = 2 when piece count -> infinity
     Worth making
 
-TrihexAndHexTiling: may be interesting but it's nonconvex. The definition may be misinterpreted
-    dim = 3 for 25 pieces
-    dim = 6 for 40 pieces (3 dangling pieces)
-    dim = 4 for 60 pieces
-    dim = 5 for 85 pieces
-    dim = 5 for 107 pieces
+TrihexAndHexTiling: nonconvex, dim = 0. cannot disassemble
 
 Limitation of edge detection: vertices cannot be on an edge.
 
@@ -578,7 +574,7 @@ ShingleTiling: cannot detect all edges
 ZigzagTiling: cannot detect all edges
 KiteTiling inf
 FalseCubicTiling should be 1, but the analysis shows inf
-TrihexAndHexTiling: non convex
+TrihexAndHexTiling 0
 GlideReflectionTiling inf
 PentagonType1Tiling: free parameters
 PentagonType2Tiling: free parameters
