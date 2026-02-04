@@ -20,10 +20,10 @@ interestingPolyhedra = {#, vertexDegrees[#], numVertices[vertexDegrees[#]]} & /@
           dt = vertexDegrees[p];
           n3 = countDeg[dt, 3];
           nOther = numVertices[dt] - n3;
-          (* n3 >= nOther && *)
+          n3 >= nOther &&
           (* numVertices[dt] > 32 && *)
-          n3 < nOther &&
-          n3 >= 0.5 nOther &&
+          (* n3 < nOther && *)
+          (* n3 >= 0.5 nOther && *)
           maxDeg[dt] > 3,
           False
         ]

@@ -157,8 +157,13 @@ EquilateralChamferedTetrahedron: dim = 1
 EquilateralChamferedCube: dim = 1
 EquilateralChamferedDodecahedron: dim = 1
 CanonicalChamferedDodecahedron: dim = 1
-EquilateralChamferedOctahedron: dim = 2
-EquilateralChamferedIcosahedron: dim = 4
+EquilateralChamferedOctahedron: dim = 2, motion: Rhombic Dodecahedron + extra triangles
+EquilateralChamferedIcosahedron: dim = 4, motion: Rhombic Triacontahedron + extra triangles
+
+
+Custom shape:
+SquareBifrustum, defined in square_bifrustum.wls: dim = 2. top/bottom halves, or radially. not very interesting
+
 
 
 ====================
