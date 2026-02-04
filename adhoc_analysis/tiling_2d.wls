@@ -39,7 +39,7 @@ phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
 findVerticesBatchSize = 300;
 (* findVerticesBatchSize = 400000; *)
-targetPieceCount = 41;
+targetPieceCount = 107;
 
 (* shape = "HexagonalTiling"; *)
 (* shape = "SquareTiling"; *)
@@ -524,9 +524,11 @@ PortugalTiling
     dim = 2 when piece count -> infinity
     Worth making
 
-TrihexAndHexTiling
+TrihexAndHexTiling: may be interesting but it's nonconvex. The definition may be misinterpreted
     dim = 3 for 25 pieces
     dim = 6 for 40 pieces (3 dangling pieces)
+    dim = 4 for 60 pieces
+    dim = 5 for 85 pieces
 
 Limitation of edge detection: vertices cannot be on an edge.
 
@@ -575,7 +577,7 @@ ShingleTiling: cannot detect all edges
 ZigzagTiling: cannot detect all edges
 KiteTiling inf
 FalseCubicTiling should be 1, but the analysis shows inf
-TrihexAndHexTiling ???
+TrihexAndHexTiling: non convex
 GlideReflectionTiling inf
 PentagonType1Tiling: free parameters
 PentagonType2Tiling: free parameters
