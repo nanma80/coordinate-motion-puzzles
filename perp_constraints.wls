@@ -9,10 +9,10 @@ forceUniformExpansion = False;
 
 PairsToGlue = 0;
 (* PairsToGlue = 1; *)
-(* PairsToGlue = 3; *)
+(* PairsToGlue = 2; *)
 
 findVertices = False;
-findVertices = True;
+(* findVertices = True; *)
 
 computeDimensions = False;
 (* computeDimensions = True; *)
