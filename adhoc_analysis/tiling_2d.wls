@@ -529,6 +529,7 @@ TrihexAndHexTiling: may be interesting but it's nonconvex. The definition may be
     dim = 6 for 40 pieces (3 dangling pieces)
     dim = 4 for 60 pieces
     dim = 5 for 85 pieces
+    dim = 5 for 107 pieces
 
 Limitation of edge detection: vertices cannot be on an edge.
 
