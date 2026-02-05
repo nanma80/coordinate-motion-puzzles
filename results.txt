@@ -161,10 +161,20 @@ EquilateralChamferedOctahedron: dim = 2, motion: Rhombic Dodecahedron + extra tr
 EquilateralChamferedIcosahedron: dim = 4, motion: Rhombic Triacontahedron + extra triangles
 
 
-Custom shape:
-SquareBifrustum, defined in square_bifrustum.wls: dim = 2. top/bottom halves, or radially. not very interesting
+Dual of Johnson:
 
-
+15: dim = 2. SquareBifrustum: top/bottom halves, or radially. not very interesting
+17: dim = 1
+26: dim = 2. {{2, 1, 1, 1, 1, 1, 1}, 2}. No intuition
+27: dim = 2. {{4, 4, 4}, 1}; {{3, 3, 2, 2, 2}, 1}, listed above
+57: dim = 2. {{5, 5, 5}, 1}; {{2, 2, 2, 2, 2, 2, 1, 1, 1}, 1}
+58: dim = 7. icosahedron truncated one corner
+59: dim = 5. icosahedron truncated two opposite corners
+60: dim = 5. icosahedron truncated two corners near opposite but not perfectly opposite
+61: dim = 4. icosahedron truncated three corners near opposite but not perfectly opposite
+86: dim = 0. wrong?
+91: dim = 3.
+92: dim = 2. {{3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1}, 1}; {{3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, 1}
 
 ====================
 Motions

@@ -12,10 +12,10 @@ PairsToGlue = 0;
 (* PairsToGlue = 2; *)
 
 findVertices = False;
-findVertices = True;
+(* findVertices = True; *)
 
 computeDimensions = False;
-(* computeDimensions = True; *)
+computeDimensions = True;
 
 If[forceUniformExpansion && PairsToGlue > 0,
     Print["Cannot both force uniform expansion and glue any pair of pieces at the same time. Will not glue any."];
@@ -40,21 +40,9 @@ epsilon = 0.000000001;
 findVerticesBatchSize = 300;
 (* findVerticesBatchSize = 400000; *)
 
-(* shape = "Tetrahedron"; *)
-(* shape = "Cube"; *)
-(* shape = "Dodecahedron"; *)
+johnsonIndex = 86;
 
-(* shape = "Octahedron"; *)
-(* shape = "Icosahedron"; *)
-
-(* shape = "RhombicDodecahedron"; *)
-(* shape = "RhombicTriacontahedron"; *)
-
-(* shape = "Cuboctahedron"; *)
-(* shape = "Icosidodecahedron"; *)
-
-(* shape = "SquareAntiprism"; *)
-shape = "SquareBifrustum";
+shape = "Dual_Johnson_" <> ToString[johnsonIndex];
 
 outputFolder = FileNameJoin[{"..", "output"}];
 dataFolder = "data";
@@ -81,16 +69,13 @@ isExtreme[v_, verts_] := Module[
 ];
 
 (* construct the shape *)
-j15 = PolyhedronData[{"Johnson", 15}, "Polyhedron"];
-bifrustum = DualPolyhedron[j15];
-vertices = bifrustum[[1]];
-faces = bifrustum[[2]];
+johnsonSolid = PolyhedronData[{"Johnson", johnsonIndex}, "Polyhedron"];
+johnsonDual = DualPolyhedron[johnsonSolid];
+vertices = johnsonDual[[1]];
+faces = johnsonDual[[2]];
 
-Print[vertices];
-Print[vertices//Length];
-
-Print[faces];
-Print[faces//Length];
+Print["Vertex count: ", vertices//Length];
+Print["Face count: ",faces//Length];
 
 faceCount = Length[faces];
 edgesByFace = Map[getEdgesFromFace, faces];
@@ -114,14 +99,7 @@ For[f1id = 1, f1id <= faceCount, f1id++,
     ];
 ];
 
-
-(* allEdges = Flatten[Table[Partition[face, 2, 1, 1], {face, faces}], 1]; *)
-
-(* 2. Normalize and remove duplicates to get unique EdgeIndices *)
-(* edges = DeleteDuplicates[Sort /@ allEdges]; *)
-
-Print[edges];
-Print[edges//Length];
+Print["Edge count: ", edges//Length];
 
 faceEdges = Table[
    Sort /@ Table[
