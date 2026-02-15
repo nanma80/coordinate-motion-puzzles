@@ -39,7 +39,7 @@ phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
 findVerticesBatchSize = 300;
 (* findVerticesBatchSize = 400000; *)
-targetPieceCount = 25;
+targetPieceCount = 133;
 
 (* shape = "HexagonalTiling"; *)
 (* shape = "SquareTiling"; *)
@@ -54,10 +54,10 @@ targetPieceCount = 25;
 (* shape = "TrihexagonalTiling"; *)
 (* shape = "ElongatedTriangularTiling"; *)
 
-(* shape = "RhombilleTiling"; *)
+shape = "RhombilleTiling";
 (* shape = "CairoPentagonalTiling"; *)
 (* shape = "PortugalTiling"; *)
-shape = "TrihexAndHexTiling";
+(* shape = "TrihexAndHexTiling"; *)
 
 outputFolder = FileNameJoin[{"..", "output"}];
 dataFolder = "data";
@@ -90,21 +90,30 @@ tiling = Entity["PeriodicTiling", shape];
 
 cell = tiling["PrimitiveUnit"];
 primitivePolygons = Cases[cell, Polygon[p_] :> p, All];
+Print["primitivePolygons:"];
+Print[primitivePolygons];
 
 lat = tiling["TranslationVectors"][];
 
 pieceCount = 0;
 
+relativeCenter = {0, 0};
+If[shape == "RhombilleTiling",
+    (* deg-6 center *)
+    (* relativeCenter = primitivePolygons[[1]][[2]]; *)
+    (* deg-3 center *)
+    relativeCenter = primitivePolygons[[1]][[3]];
+];
+
 For[polygonRadius = 1, pieceCount < targetPieceCount, polygonRadius++,
-    Print["Building faces. Radius = ", polygonRadius, " pieceCount so far: ", pieceCount];
-    nmax = Ceiling[polygonRadius/Min[Norm /@ lat]];
+    nmax = Ceiling[(polygonRadius + Norm[relativeCenter])/Min[Norm /@ lat]];
     polygonsTable = Table[
         Map[# + i lat[[1]] + j lat[[2]] &, primitivePolygons, {2}],
         {i, -nmax, nmax}, {j, -nmax, nmax}
     ];
 
     flatPolygons = FullSimplify[Flatten[polygonsTable, 2]];
-    polygons = Select[flatPolygons, Norm[Mean[#]] < polygonRadius &];
+    polygons = Select[flatPolygons, Norm[Mean[#] - relativeCenter] < polygonRadius &];
     pieceCount = Length[polygons];
 ];
 
@@ -469,6 +478,22 @@ RhombilleTiling:
     dim = 24 for piece count = 130
     dim = 26 for piece count = 188
     likely dim -> infinity when piece count -> infinity
+
+    deg-6 center:
+    dim = 10 for piece count = 24
+    dim = 10 for piece count = 42
+    dim = 16 for piece count = 66
+    dim = 16 for piece count = 90
+    dim = 22 for piece count = 126
+    dim = 28 for piece count = 180
+
+    deg-3 center:
+    dim = 7 for piece count = 24
+    dim = 13 for piece count = 42
+    dim = 16 for piece count = 69
+    dim = 19 for piece count = 99
+    dim = 22 for piece count = 132
+    dim = 25 for piece count = 171
 
 TruncatedHexagonalTiling:
     dim = 1 for piece count = 19
