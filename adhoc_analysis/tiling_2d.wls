@@ -39,9 +39,15 @@ phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
 findVerticesBatchSize = 300;
 (* findVerticesBatchSize = 400000; *)
-targetPieceCount = 133;
+targetPieceCount = 20;
 
-(* shape = "HexagonalTiling"; *)
+(* default: the constraint is perpendicular to the edge between pieces. But we may try different angles *)
+constraintAngle = Pi/2;
+
+(* however, I have not found any tiling where changing constraintAngle makes a difference *)
+(* constraintAngle = Pi/4; *)
+
+shape = "HexagonalTiling";
 (* shape = "SquareTiling"; *)
 (* shape = "TriangularTiling"; *)
 
@@ -54,7 +60,7 @@ targetPieceCount = 133;
 (* shape = "TrihexagonalTiling"; *)
 (* shape = "ElongatedTriangularTiling"; *)
 
-shape = "RhombilleTiling";
+(* shape = "RhombilleTiling"; *)
 (* shape = "CairoPentagonalTiling"; *)
 (* shape = "PortugalTiling"; *)
 (* shape = "TrihexAndHexTiling"; *)
@@ -141,7 +147,7 @@ For[f1id = 1, f1id <= faceCount, f1id++,
                 If[sameEdge[edgesFace1[[e1id]], edgesFace2[[e2id]]],
                     (* for nonconvex tiles, comment out the following line *)
                     neighborFlag = True;
-                    perpDirection = (edgesFace1[[e1id]][[1]] - edgesFace1[[e1id]][[2]] ).RotationMatrix[Pi/2];
+                    perpDirection = (edgesFace1[[e1id]][[1]] - edgesFace1[[e1id]][[2]] ).RotationMatrix[constraintAngle];
                     AppendTo[neighborFacePairs, {f1id, f2id}];
                     AppendTo[edgePerpDirections, perpDirection];
                 ];
@@ -458,6 +464,9 @@ HexagonalTiling:
     dim = 1 for piece count = 12
     dim = 1 for piece count = 30
     dim = 1 Should be correct, because all vertices are degree 3
+
+HexagonalTiling, Pi/3:
+    dim = 1
 
 SquareTiling:
     dim = 6 for piece count = 12
