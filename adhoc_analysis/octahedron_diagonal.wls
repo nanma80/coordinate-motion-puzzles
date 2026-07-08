@@ -12,10 +12,10 @@ PairsToGlue = 0;
 (* PairsToGlue = 2; *)
 
 findVertices = False;
-findVertices = True;
+(* findVertices = True; *)
 
 computeDimensions = False;
-(* computeDimensions = True; *)
+computeDimensions = True;
 
 If[forceUniformExpansion && PairsToGlue > 0,
     Print["Cannot both force uniform expansion and glue any pair of pieces at the same time. Will not glue any."];
@@ -161,6 +161,16 @@ For[edgeId = 1, edgeId <= Length[edgeToFaces], edgeId++,
         AppendTo[conditions, crossProduct[[dim]] >= -epsilon * 0.00001 ];
     ];
 ];
+
+(* for testing *)
+(* facesToIgnore = {2, 4, 6, 7};
+For[fid = 1, fid <= Length[facesToIgnore], fid++,
+    pid = facesToIgnore[[fid]];
+    Print["pid: ", pid];
+    AppendTo[conditions, pieceCoordinates[[pid]][[1]] == 0 ];
+    AppendTo[conditions, pieceCoordinates[[pid]][[2]] == 0 ];
+    AppendTo[conditions, pieceCoordinates[[pid]][[3]] == 0 ];
+]; *)
 
 (* diagonalFacePairs contains only face indices. There's no "edge" *)
 diagonalFacePairs = {{1, 3}, {1, 5}, {1, 8}, {3, 5}, {3, 8}, {5, 8}};
