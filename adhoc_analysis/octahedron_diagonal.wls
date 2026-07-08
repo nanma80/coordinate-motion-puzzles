@@ -9,13 +9,13 @@ forceUniformExpansion = False;
 
 PairsToGlue = 0;
 (* PairsToGlue = 1; *)
-(* PairsToGlue = 3; *)
+(* PairsToGlue = 2; *)
 
 findVertices = False;
-(* findVertices = True; *)
+findVertices = True;
 
 computeDimensions = False;
-computeDimensions = True;
+(* computeDimensions = True; *)
 
 If[forceUniformExpansion && PairsToGlue > 0,
     Print["Cannot both force uniform expansion and glue any pair of pieces at the same time. Will not glue any."];
@@ -40,19 +40,28 @@ epsilon = 0.000000001;
 findVerticesBatchSize = 300;
 (* findVerticesBatchSize = 400000; *)
 
-polygonSideCount = 7;
+(* shape = "Tetrahedron"; *)
+(* shape = "Cube"; *)
+(* shape = "Dodecahedron"; *)
 
-(* apply rotated no overlap constraint on diagonal *)
-diagonalPairSkip = 2;
-rotatedConstraintAngle = Pi/2;
+shape = "Octahedron";
+(* shape = "Icosahedron"; *)
 
-shape = "polygon_" <> ToString[polygonSideCount] <> "_" <> ToString[diagonalPairSkip] <> "_gon";
+(* shape = "RhombicDodecahedron"; *)
+(* shape = "RhombicTriacontahedron"; *)
+
+(* shape = "Cuboctahedron"; *)
+(* shape = "Icosidodecahedron"; *)
+
+(* shape = "SquareAntiprism"; *)
+(* shape = "RhombicIcosahedron"; *)
+
 outputFolder = FileNameJoin[{"..", "output"}];
 dataFolder = "data";
-vertexFileName = shape <> "_vertices.json";
+vertexFileName = shape <> "_diagonal_constraint_vertices.json";
 vertexFileNameFull = FileNameJoin[{outputFolder, dataFolder, vertexFileName}];
 
-Print["shape: ", shape];
+Print["The shape is: ", shape];
 isExtreme[v_, verts_] := Module[
   {others, n, vars, res, minval},
   others = Select[verts, EuclideanDistance[v, #] > 10 epsilon&];
@@ -66,51 +75,45 @@ isExtreme[v_, verts_] := Module[
     },
     vars
   ];
+  (* Print[res]; *)
   minval = res[[1]];
   minval > 10 epsilon
 ];
 
-faceCenters = Table[ {Cos[Pi (2 i - 1)/polygonSideCount], Sin[Pi (2 i - 1)/polygonSideCount], 0}, {i, 1, polygonSideCount}]//N;
-faceCentersFlat = Flatten[faceCenters];
-Print["piece (face) centers"];
-Print[faceCenters];
-
-faceCount = Length[faceCenters];
-pieceCount = faceCount; (* for convenience *)
-Print["piece (face) count: ", pieceCount];
-
-neighborFacePairs = Table[{i, Mod[i, polygonSideCount]+1}, {i, 1, polygonSideCount}];
-
-Print["edges by face ids:"];
-Print[neighborFacePairs];
-Print["edge count: ", Length[neighborFacePairs]];
-
-r = 0.1;
-ballsPlot = Sphere[#, r] & /@ faceCenters;
-
-rc = 0.04;
-edgesPlot = Cylinder[
-   {faceCenters[[#[[1]]]], faceCenters[[#[[2]]]]},
-   rc
- ] & /@ neighborFacePairs;
-
-plot = Graphics3D[
-  {
-    (* balls *)
-    Directive[LightBlue, Specularity[White, 20]],
-    ballsPlot,
-
-    (* connections *)
-    Directive[GrayLevel[0.3]],
-    edgesPlot
-  },
-  Boxed -> False,
-  ViewPoint -> {0, 0, 10},
-  Lighting -> "Neutral"
+vertices = PolyhedronData[shape, "VertexCoordinates"];
+faces = PolyhedronData[shape, "FaceIndices"];
+edges = PolyhedronData[shape, "EdgeIndices"];
+Print["vertices: ", vertices];
+Print["faces: ", faces];
+Print["edges: ", edges];
+faceEdges = Table[
+   Sort /@ Table[
+     {v[[i]], v[[Mod[i, Length[v]] + 1]]},
+     {i, Length[v]}
+   ],
+   {v, faces}
+];
+edgeToFaces = Table[
+   edge = Sort[edges[[i]]];
+   matchingFaces = First /@ Position[faceEdges, edge];
+   {edge, matchingFaces},
+   {i, Length[edges]}
 ];
 
-(* Export["test_plot/"<> shape <> ".png", plot]; *)
+(*
+    each item in edgeToFaces describes an edge, like:
+    {{{1, 2}, {13, 14}}
+    It means the edge is between vertices with index 1 to vertext index 2. The edge is shared between faces 13 and 14
+    It should work for convex polyhedra. No guarantee for 
+*)
 
+faceCenters = Mean /@ (vertices[[#]] & /@ faces);
+faceCenters = N[faceCenters];
+faceCentersFlat = Flatten[faceCenters];
+
+faceCount = Length[faces];
+pieceCount = faceCount; (* for convenience *)
+Print["piece (face) count: ", pieceCount];
 
 (* each face becomes a piece *)
 pieceCoordinates = Array[x, {faceCount, 3}];
@@ -136,14 +139,21 @@ For[dim = 1, dim <= 3, dim++,
     AppendTo[conditions, Total[Table[pieceCoordinates[[k]][[dim]], {k, 1, faceCount }]] == 0];
 ];
 
-For[pairId = 1, pairId <= Length[neighborFacePairs], pairId++,
-    pair = neighborFacePairs[[pairId]];
-    face1 = pair[[1]];
-    face2 = pair[[2]];
-    vector12 = N[faceCenters[[face1]] - faceCenters[[face2]]];
-    
-    noOverlapCondition = ( pieceCoordinates[[face1]] - pieceCoordinates[[face2]] ).vector12 >= - epsilon * 0.00001 ;
-    crossProduct = Cross[pieceCoordinates[[face1]] - pieceCoordinates[[face2]], vector12];
+Print["edgeToFaces: ", edgeToFaces];
+
+For[edgeId = 1, edgeId <= Length[edgeToFaces], edgeId++,
+    edgeIndex = edgeToFaces[[edgeId]];
+    edgeVertex1 = edgeIndex[[1]][[1]];
+    edgeVertex2 = edgeIndex[[1]][[2]];
+    face1 = edgeIndex[[2]][[1]];
+    face2 = edgeIndex[[2]][[2]];
+    edgeVector = N[vertices[[edgeVertex1]] - vertices[[edgeVertex2]]];
+    normalVector = Cross[edgeVector, N[vertices[[edgeVertex1]]]];
+    (* there's no guarantee normalVector will point to face1 or face2. We quickly check here to ensure it's pointing to face1 *)
+    If[normalVector.( faceCenters[[face1]] - faceCenters[[face2]] ) < 0, normalVector = - normalVector];
+
+    noOverlapCondition = ( pieceCoordinates[[face1]] - pieceCoordinates[[face2]] ).normalVector >= - epsilon * 0.00001 ;
+    crossProduct = Cross[pieceCoordinates[[face1]] - pieceCoordinates[[face2]], normalVector];
 
     AppendTo[conditions, noOverlapCondition];
     For[dim = 1, dim <= 3, dim++,
@@ -152,30 +162,34 @@ For[pairId = 1, pairId <= Length[neighborFacePairs], pairId++,
     ];
 ];
 
-(* same as neighbor, but + 2 rather than + 1 *)
-diagonalFacePairs = Table[{i, Mod[i + diagonalPairSkip - 1, polygonSideCount] + 1}, {i, 1, polygonSideCount}];
+(* diagonalFacePairs contains only face indices. There's no "edge" *)
+diagonalFacePairs = {{1, 3}, {1, 5}, {1, 8}, {3, 5}, {3, 8}, {5, 8}};
+(* diagonalFacePairs = {{1, 3}, {1, 5}, {1, 8}}; *)
 Print["diagonalFacePairs: ", diagonalFacePairs];
+rotatedConstraintAngle = Pi/2;
 
 For[pairId = 1, pairId <= Length[diagonalFacePairs], pairId++,
     pair = diagonalFacePairs[[pairId]];
     face1 = pair[[1]];
     face2 = pair[[2]];
     vector12 = N[faceCenters[[face1]] - faceCenters[[face2]]];
-    vector12rotated = RotationMatrix[rotatedConstraintAngle, {0, 0, 1}].vector12;
+    middlePoint = N[faceCenters[[face1]] + faceCenters[[face2]]];
+    vector12rotated = RotationMatrix[rotatedConstraintAngle, middlePoint].vector12;
 
     noOverlapConditionRotated = ( pieceCoordinates[[face1]] - pieceCoordinates[[face2]] ).vector12rotated >= - epsilon * 0.00001 ;
     AppendTo[conditions, noOverlapConditionRotated];
 ];
 
+
 For[gid = 1, gid <= PairsToGlue, gid++,
-    gluedPair = neighborFacePairs[[gid]];
+    edgeIndex = edgeToFaces[[gid]];
+    gluedPair = edgeIndex[[2]];
     Print["Gluing a pair of pieces: "];
     Print[gluedPair];
     For[dim = 1, dim <= 3, dim++,
         AppendTo[conditions, pieceCoordinates[[gluedPair[[1]]]][[dim]] == pieceCoordinates[[gluedPair[[2]]]][[dim]] ];
     ];
 ];
-
 
 Print["condition count:"];
 Print[Length[conditions]];
@@ -381,10 +395,7 @@ If[computeDimensions,
             Print["Group count"]
             Print[ tallyCounts//Length ];
         ];
-
     ];
-
-
 ];
 
 Print["The shape is: ", shape];
@@ -393,22 +404,11 @@ Print["The shape is: ", shape];
 
 
 (* 
-4-gon, skip 2 (diagonal), rotate Pi/2:
-dim = 1 (original dim = 2)
+results:
 
-5-gon, skip 2, rotate Pi/2:
-dim = 1 (original dim = 3)
+Faces 1, 3, 5, 8 are four altenating faces out of 8 faces.
+If we have rotated no overlap constraint by 90 deg, the dimension drops from 3 to 1.
+Only uniform expansion
 
-6-gon, skip 2, rotate Pi/2:
-dim = 1 (original dim = 4)
 
-6-gon, skip 3, rotate Pi/2:
-dim = 2 (original dim = 4)
-
-7-gon, skip 2, rotate Pi/2:
-dim = 1 (original dim = 4)
-
-7-gon, skip 3, rotate Pi/2:
-dim = 1 (original dim = 5)
-
-*)
+ *)
