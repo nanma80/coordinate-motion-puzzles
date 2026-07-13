@@ -58,7 +58,7 @@ shape = "Icosahedron";
 
 outputFolder = FileNameJoin[{"..", "output"}];
 dataFolder = "data";
-vertexFileName = shape <> "_diagonal_constraint_vertices.json";
+vertexFileName = shape <> "_cube_diagonal_constraint_vertices.json";
 vertexFileNameFull = FileNameJoin[{outputFolder, dataFolder, vertexFileName}];
 
 Print["The shape is: ", shape];
@@ -191,14 +191,28 @@ For[fid = 1, fid <= Length[facesToIgnore], fid++,
     {11, 2}, {11, 12}, {13, 2}, {13, 12}, {16, 7}, {16, 17}, {18, 7}, {18, 17}
 }; *)
 
-(* dim = 1, 1 diagonal per face *)
-diagonalFacePairs = {
+(* dim = 1, 1 diagonal per face. The cuts surround four vertices *)
+(* diagonalFacePairs = {
     {2, 4}, {5, 17}, {7, 10}, {12, 9}, 
     {4, 13}, {10, 16}, {5, 18}, {9, 11},
     {11, 12}, {13, 2}, {16, 7}, {18, 17}
+}; *)
+
+
+(* dim = 6, The 4 cuts form a square *)
+(* diagonalFacePairs = {
+    {1, 3}, {3, 14}, {14, 15}, {15, 1}
+}; *)
+
+
+(* dim = 3, 1 diagonal per face. The cuts form a cube *)
+diagonalFacePairs = {
+    {1, 3}, {3, 14}, {14, 15}, {15, 1},
+    {15, 8}, {8, 6}, {6, 14},
+    {8, 19}, {19, 1},
+    {6, 20}, {20, 3},
+    {19, 20}
 };
-
-
 
 Print["diagonalFacePairs: ", diagonalFacePairs];
 rotatedConstraintAngle = Pi/2;
@@ -225,6 +239,21 @@ For[gid = 1, gid <= PairsToGlue, gid++,
         AppendTo[conditions, pieceCoordinates[[gluedPair[[1]]]][[dim]] == pieceCoordinates[[gluedPair[[2]]]][[dim]] ];
     ];
 ];
+
+(* pairs in the icosahedron-cube motion *)
+(* customPairsToGlueFaceIds = { {4, 5}, {9, 10}, {7, 17}, {2, 12} }; *)
+
+(* all pairs in the cube symmetry is not allowed *)
+(* customPairsToGlueFaceIds = { {4, 5}, {9, 10}, {7, 17}, {2, 12}, {13, 16}, {11, 18} }; *)
+
+(* For[gid = 1, gid <= Length[customPairsToGlueFaceIds], gid++,
+    gluedPair = customPairsToGlueFaceIds[[gid]];
+    Print["Gluing a custom pair: "];
+    Print[gluedPair];
+    For[dim = 1, dim <= 3, dim++,
+        AppendTo[conditions, pieceCoordinates[[gluedPair[[1]]]][[dim]] == pieceCoordinates[[gluedPair[[2]]]][[dim]] ];
+    ];
+]; *)
 
 Print["condition count:"];
 Print[Length[conditions]];
@@ -458,12 +487,31 @@ diagonalFacePairs = {
 };
 
 
-(* dim = 1, 1 diagonal per face *)
+(* dim = 1, 1 diagonal per face. The cuts surround four vertices *)
 diagonalFacePairs = {
     {2, 4}, {5, 17}, {7, 10}, {12, 9}, 
     {4, 13}, {10, 16}, {5, 18}, {9, 11},
     {11, 12}, {13, 2}, {16, 7}, {18, 17}
 };
+
+
+(* dim = 6, The 4 cuts form a square *)
+diagonalFacePairs = {
+    {1, 3}, {3, 14}, {14, 15}, {15, 1}
+};
+
+
+(* dim = 3, 1 diagonal per face. The cuts form a cube *)
+diagonalFacePairs = {
+    {1, 3}, {3, 14}, {14, 15}, {15, 1},
+    {15, 8}, {8, 6}, {6, 14},
+    {8, 19}, {19, 1},
+    {6, 20}, {20, 3},
+    {19, 20}
+};
+
+Each motion: 4 pairs of pieces, in the +x, -x, +y, -y directions. Interestingly, 6 pairs of pieces (including +z -z) are not allowed.
+
 
 
  *)
