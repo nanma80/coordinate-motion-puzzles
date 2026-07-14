@@ -15,7 +15,7 @@ findVertices = False;
 (* findVertices = True; *)
 
 computeDimensions = False;
-(* computeDimensions = True; *)
+computeDimensions = True;
 
 If[forceUniformExpansion && PairsToGlue > 0,
     Print["Cannot both force uniform expansion and glue any pair of pieces at the same time. Will not glue any."];
@@ -56,6 +56,8 @@ findVerticesBatchSize = 300;
 (* shape = "SquareAntiprism"; *)
 shape = "RhombicIcosahedron";
 
+(* shape = "RhombicEnneacontahedron"; *)
+
 outputFolder = "output";
 dataFolder = "data";
 vertexFileName = shape <> "_vertices.json";
@@ -80,9 +82,13 @@ isExtreme[v_, verts_] := Module[
   minval > 10 epsilon
 ];
 
-vertices = PolyhedronData[shape, "VertexCoordinates"];
-faces = PolyhedronData[shape, "FaceIndices"];
-edges = PolyhedronData[shape, "EdgeIndices"];
+internalShape = shape;
+If[shape == "RhombicDodecahedronStellation",
+    internalShape = {shape, 1}
+];
+vertices = PolyhedronData[internalShape, "VertexCoordinates"];
+faces = PolyhedronData[internalShape, "FaceIndices"];
+edges = PolyhedronData[internalShape, "EdgeIndices"];
 faceEdges = Table[
    Sort /@ Table[
      {v[[i]], v[[Mod[i, Length[v]] + 1]]},
