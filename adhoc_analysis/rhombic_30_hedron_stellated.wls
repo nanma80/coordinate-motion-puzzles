@@ -57,7 +57,7 @@ shape = "RhombicTriacontahedron";
 (* shape = "SquareAntiprism"; *)
 (* shape = "RhombicIcosahedron"; *)
 
-outputFolder = "output";
+outputFolder = FileNameJoin[{"..", "output"}];
 dataFolder = "data";
 vertexFileName = shape <> "_stellated_vertices.json";
 vertexFileNameFull = FileNameJoin[{outputFolder, dataFolder, vertexFileName}];
