@@ -12,10 +12,10 @@ PairsToGlue = 0;
 (* PairsToGlue = 2; *)
 
 findVertices = False;
-(* findVertices = True; *)
+findVertices = True;
 
 computeDimensions = False;
-computeDimensions = True;
+(* computeDimensions = True; *)
 
 If[forceUniformExpansion && PairsToGlue > 0,
     Print["Cannot both force uniform expansion and glue any pair of pieces at the same time. Will not glue any."];
@@ -38,6 +38,7 @@ If[computeDimensions && (forceUniformExpansion || PairsToGlue > 0 ),
 phi = (Sqrt[5] + 1)/2;
 epsilon = 0.000000001;
 findVerticesBatchSize = 300;
+findVerticesBatchSize = 2000;
 (* findVerticesBatchSize = 400000; *)
 
 (* shape = "Tetrahedron"; *)
@@ -54,9 +55,9 @@ findVerticesBatchSize = 300;
 (* shape = "Icosidodecahedron"; *)
 
 (* shape = "SquareAntiprism"; *)
-shape = "RhombicIcosahedron";
+(* shape = "RhombicIcosahedron"; *)
 
-(* shape = "RhombicEnneacontahedron"; *)
+shape = "RhombicEnneacontahedron";
 
 outputFolder = "output";
 dataFolder = "data";

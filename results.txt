@@ -152,7 +152,7 @@ Polyhedra enumerated by vertex degrees:
 {ParabiaugmentedTruncatedDodecahedron, {{3, 40}, {4, 30}}, 70}: not interested, too complicated
 {PentagonalHexecontahedron, {{3, 80}, {5, 12}}, 92}: analyzed
 {PentagonalIcositetrahedron, {{3, 32}, {4, 6}}, 38}: analyzed
-{RhombicEnneacontahedron, {{3, 60}, {5, 12}, {6, 20}}, 92}: not interested, too complicated
+{RhombicEnneacontahedron, {{3, 60}, {5, 12}, {6, 20}}, 92}: dim = 8
 {TridiminishedRhombicosidodecahedron, {{3, 30}, {4, 15}}, 45}: not interested, too complicated
 
 {RhombicIcosahedron, {{3, 10}, {4, 10}, {5, 2}}, 22}: dim = 3, {{3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, 10}
