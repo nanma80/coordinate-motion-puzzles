@@ -106,6 +106,10 @@ TetrahedronTenCompound: dim = 37, (+27 for centers of mass of 9 extra components
 {RhombicDodecahedronStellation, 1}: dim = 1
 GreatRhombicTriacontahedron: dim = 4
 
+Stellated Rhombic Triacontahedron: manually constructed, second nearest faces become neighbors. dim = 4
+rhombic_30_hedron_stellated.wls
+
+
 
 Johnson:
 Gyrobifastigium: dim = 2, split in half: {4, 4}, and, 4 doubles {2, 2, 2, 2}
